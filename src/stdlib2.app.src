@@ -1,0 +1,5 @@
+{application, stdlib2, [ {description,  "stdlib2"}
+                       , {vsn,          git}
+                       , {registered,   []}
+                       , {applications, [kernel, stdlib]}
+                       ]}.
