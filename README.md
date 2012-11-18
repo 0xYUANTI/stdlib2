@@ -13,6 +13,7 @@ behaviours.
 Installation
 ============
 jakob@sleepy.primat.es:~/git/stdlib2$ gmake
+
 jakob@sleepy.primat.es:~/git/stdlib2$ gmake test
 
 Manifest
