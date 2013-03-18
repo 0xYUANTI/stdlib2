@@ -7,7 +7,8 @@
 -module(s2_rand).
 
 %%%_* Exports ==========================================================
--export([ numbers/2
+-export([ int/0
+        , numbers/2
         , pick/1
         , shuffle/1
         ]).
@@ -17,6 +18,11 @@
 -include_lib("stdlib2/include/prelude.hrl").
 
 %%%_* Code =============================================================
+-spec int() -> non_neg_integer().
+%% Return a random 128-bit integer.
+int() -> crypto:rand_uniform(0, 1 bsl 127).
+
+
 -spec numbers(pos_integer(), pos_integer()) -> [pos_integer()].
 %% @doc numbers(N, Max) is a list of N random numbers between 0 and
 %% Max-1.
