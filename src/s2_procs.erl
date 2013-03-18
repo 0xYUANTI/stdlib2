@@ -197,9 +197,8 @@ spinlock(F) -> F() orelse spinlock(F).
 spinlock_test() ->
   spawn(?thunk(spinlock(
     fun() ->
-      X = lists:member(regname, registered()),
-      register(regname, self()),
-      X
+      lists:member(spinlock_test, registered())
+        orelse begin register(spinlock_test, self()), false end
     end))).
 
 %%%_ * with_monitor ----------------------------------------------------
