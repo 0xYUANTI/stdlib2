@@ -16,6 +16,7 @@
         , recv/1
         , recv/2
         , send/2
+        , spinlock/1
         , with_monitor/2
         ]).
 
@@ -187,6 +188,19 @@ send_recv_test() ->
 
 tab_test() ->
   true = {node(), node(), {name, node()}} =:= tab({name, node()}).
+
+%%%_ * spinlock --------------------------------------------------------
+-spec spinlock(fun(() -> boolean())) -> true | no_return().
+%% @doc Spin until F returns true.
+spinlock(F) -> F() orelse spinlock(F).
+
+spinlock_test() ->
+  spawn(?thunk(spinlock(
+    fun() ->
+      X = lists:member(regname, registered()),
+      register(regname, self()),
+      X
+    end))).
 
 %%%_ * with_monitor ----------------------------------------------------
 -spec with_monitor(proc(), fun(({proc(), reference()}) -> A)) -> A.
