@@ -123,6 +123,40 @@
 
 -endif. %S2_NOLOG
 
+%%%_* Metrics ==========================================================
+%% Luke Gorrie's favourite profiling macro.
+-define(TIME(Tag, Expr),
+        (fun() ->
+           %% NOTE: timer:tc/4 does an annoying 'catch' so we
+           %% need to wrap the result in 'ok' to be able to
+           %% detect an unhandled exception.
+           {__TIME, __RESULT} =
+             timer:tc(erlang, apply, [fun() -> {ok, Expr} end, []]),
+           io:format("time(~s): ~18.3fms ~999p~n",
+                     [?MODULE, __TIME/1000, Tag]),
+           case __RESULT of
+             {ok, _}         -> element(2, __RESULT);
+             {'EXIT', Error} -> exit(Error)
+           end
+         end)()).
+
+-ifdef(S2_USE_FOLSOM).
+
+-define(do_increment(Key),
+        (folsom_metrics:notify(Key, {inc, 1}, counter))).
+-define(do_time(Key, Expr),
+        (folsom_metrics:histogram_timed_update(Key, ?thunk(Expr)))).
+
+-else.
+
+-define(do_increment(Key),  ok).
+-define(do_time(Key, Expr), Expr).
+
+-endif.
+
+-define(increment(Key),  ?do_increment(Key)).
+-define(time(Key, Expr), ?do_time(Key, Expr)).
+
 %%%_* Types ============================================================
 -type alist(A, B) :: [{A, B}].
 -type fd()        :: file:io_device().
