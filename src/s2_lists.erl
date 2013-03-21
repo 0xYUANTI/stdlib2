@@ -30,8 +30,11 @@
 -spec assoc(alist(A, B), A) -> maybe(B, notfound).
 %% @doc assoc(KVs, K) is the value associated with K in KVs.
 assoc([],           _)      -> {error, notfound};
-assoc([{K, V}|_],   K)      -> {ok, V};
-assoc([{_, _}|KVs], K)      -> assoc(KVs, K).
+assoc(L, K)                 ->
+    case lists:keyfind(K, 1, L) of
+        {K, V} -> {ok, V};
+        false  -> {error, notfound}
+    end.
 
 assoc2_test() ->
   {ok, bar}         = assoc([{baz, quux}, {foo, bar}], foo),
