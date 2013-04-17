@@ -25,6 +25,11 @@
         , with_temp_files/2
         ]).
 
+-export([ with_temp_dir/1
+        , with_temp_dir/2
+        , with_temp_dirs/2
+        ]).
+
 %%%_* Includes =========================================================
 -include_lib("eunit/include/eunit.hrl").
 -include_lib("stdlib2/include/prelude.hrl").
@@ -156,6 +161,37 @@ with_temp_files_error_test() ->
     (catch with_temp_files(2, fun([F1, F2]) -> throw({F1, F2}) end)),
   false = filelib:is_file(F1),
   false = filelib:is_file(F2).
+
+%%%_ * with_temp_dir ---------------------------------------------------
+-spec with_temp_dir(fun((file()) -> A)) -> A.
+%% @doc
+with_temp_dir(F) ->
+  with_temp_dir("with_temp_dir", F).
+with_temp_dir(Prefix, F) ->
+  File = s2_sh:mktemp_d(Prefix),
+  try F(File)
+  after s2_sh:rm_rf(File)
+  end.
+
+-spec with_temp_dirs([file()], fun(([file()]) -> A)) -> A.
+%% @doc
+with_temp_dirs(N, F) when is_integer(N) ->
+  with_temp_dirs(lists:duplicate(N, "with_temp_dirs"), F);
+with_temp_dirs(Prefixes, F) when is_list(Prefixes) ->
+  s2_funs:unwind_with(fun with_temp_dir/2, Prefixes, F).
+
+
+with_temp_dirs_ok_test() ->
+  with_temp_dirs(2, fun([F1, F2]) ->
+    true = filelib:is_dir(F1),
+    true = filelib:is_dir(F2)
+  end).
+
+with_temp_dirs_error_test() ->
+  {F1, F2} =
+    (catch with_temp_dirs(2, fun([F1, F2]) -> throw({F1, F2}) end)),
+  false = filelib:is_dir(F1),
+  false = filelib:is_dir(F2).
 
 %%%_* Emacs ============================================================
 %%% Local Variables:
