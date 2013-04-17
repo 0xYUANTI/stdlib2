@@ -3,11 +3,12 @@
 %%% @end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%_* Module declaration ===============================================
+%%%_%%%_* Module declaration ===============================================
 -module(s2_env).
 
 %%%_* Exports ==========================================================
--export([ get_arg/4
+-export([ get_arg/3
+        , get_arg/4
         , with_sys/2
         ]).
 
@@ -17,6 +18,20 @@
 
 %%%_* Code =============================================================
 %%%_ * get_arg ---------------------------------------------------------
+-spec get_arg(alist(A, B), atom(), A) -> B.
+%% @doc get_arg(Args, App, Param, Def) is the value associated with
+%% Param in either Args or App's environment.
+get_arg(Args, App, Param) ->
+  case s2_lists:assoc(Args, Param) of
+    {ok, Val}         -> Val;
+    {error, notfound} ->
+      case application:get_env(App, Param) of
+        {ok, Val} -> Val;
+        undefined -> throw({missing_param, Param})
+      end
+  end.
+
+
 -spec get_arg(alist(A, B), atom(), A, B) -> B.
 %% @doc get_arg(Args, App, Param, Def) is the value associated with
 %% Param in either Args or App's environment; or Def.
