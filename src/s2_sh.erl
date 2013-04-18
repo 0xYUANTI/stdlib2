@@ -46,7 +46,9 @@
 %%%_* Code =============================================================
 %%%_ * Files -----------------------------------------------------------
 -spec cp(file(), file()) -> file().
-cp(Src, Dest)            -> {ok, _} = file:copy(Src, Dest), Dest.
+cp(Src, Dest0)           -> Dest    = unix2erl(Src, Dest0),
+                            {ok, _} = file:copy(Src, Dest),
+                            Dest.
 
 cp_test()                -> rm_rf(s2_fs:with_temp_file(
                               fun(F) -> cp(F, F ++ ".2") end)).
@@ -74,7 +76,9 @@ mkdir_p_test()           -> D1 = mktemp_u(),
 
 
 -spec mv(file(), file()) -> file().
-mv(Old, New)             -> ok = file:rename(Old, New), New.
+mv(Old, New0)            -> New = unix2erl(Old, New0),
+                            ok = file:rename(Old, New),
+                            New.
 
 mv_test()                -> rm_rf(s2_fs:with_temp_file(
                               fun(F) -> mv(F, F ++ ".2") end)).
@@ -111,6 +115,15 @@ touch_test() ->
     {ok, #file_info{mtime=Mtime2}} = file:read_file_info(F),
     Mtime1 < Mtime2
   end).
+
+%%
+%% Internal
+%%
+unix2erl(Src, Dest) ->
+  case filelib:is_dir(Dest) of
+    true  -> filename:join(Dest, filename:basename(Src));
+    false -> Dest
+  end.
 
 %%%_ * mktemp(1) -------------------------------------------------------
 -spec mktemp()         -> file().
