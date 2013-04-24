@@ -7,7 +7,8 @@
 -module(s2_env).
 
 %%%_* Exports ==========================================================
--export([ get_arg/3
+-export([ ensure_started/1
+        , get_arg/3
         , get_arg/4
         , with_sys/2
         ]).
@@ -17,6 +18,18 @@
 -include_lib("stdlib2/include/prelude.hrl").
 
 %%%_* Code =============================================================
+%%%_ * ensure_started --------------------------------------------------
+-spec ensure_started(atom() | [atom()]) -> ok | no_return().
+%% @doc Ensure that Apps are started.
+ensure_started(App) when is_atom(App) ->
+  ensure_started([App]);
+ensure_started(Apps) when is_list(Apps) ->
+  _ = [case application:start(App) of
+         ok                              -> ok;
+         {error, {already_started, App}} -> ok
+       end || App <- Apps],
+  ok.
+
 %%%_ * get_arg ---------------------------------------------------------
 -spec get_arg(alist(A, B), atom(), A) -> B.
 %% @doc get_arg(Args, App, Param, Def) is the value associated with
