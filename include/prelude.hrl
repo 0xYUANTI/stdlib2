@@ -142,20 +142,24 @@
 
 -ifdef(S2_USE_FOLSOM).
 
--define(do_increment(Key),
-        (folsom_metrics:notify(Key, {inc, 1}, counter))).
--define(do_time(Key, Expr),
-        (folsom_metrics:histogram_timed_update(Key, ?thunk(Expr)))).
+-define(name(Xs), (s2_atoms:catenate(s2_lists:intersperse('_', Xs)))).
+
+-define(do_increment(Name),
+        (catch folsom_metrics:notify({?name(Name), 1}))).
+-define(do_time(Name, Expr),
+        (try folsom_metrics:histogram_timed_update(?name(Name), ?thunk(Expr))
+         catch _:_ -> Expr
+         end)).
 
 -else.
 
--define(do_increment(Key),  ok).
--define(do_time(Key, Expr), Expr).
+-define(do_increment(Name),  ok).
+-define(do_time(Name, Expr), Expr).
 
 -endif.
 
--define(increment(Key),  ?do_increment(Key)).
--define(time(Key, Expr), ?do_time(Key, Expr)).
+-define(increment(Name),  ?do_increment(Name)).
+-define(time(Name, Expr), ?do_time(Name, Expr)).
 
 %%%_* Types ============================================================
 -type alist(A, B) :: [{A, B}].
