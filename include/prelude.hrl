@@ -88,6 +88,19 @@
 -define(is_thunk(X), is_function(X, 0)).
 
 %%%_* Logging ==========================================================
+-ifdef(S2_USE_LAGER).
+
+-define(debug(Format, Args),     lager:debug(Format, Args)).
+-define(info(Format, Args),      lager:info(Format, Args)).
+-define(notice(Format, Args),    lager:notice(Format, Args)).
+-define(warning(Format, Args),   lager:warning(Format, Args)).
+-define(error(Format, Args),     lager:error(Format, Args)).
+-define(critical(Format, Args),  lager:critical(Format, Args)).
+-define(alert(Format, Args),     lager:alert(Format, Args)).
+-define(emergency(Format, Args), lager:emergency(Format, Args)).
+
+-else.
+
 -ifdef(S2_DEBUG).
 -define(debug(Msg),            ?debug(Msg, [])).
 -define(debug(Fmt, As),        ?do_debug("~p:~s:~p: Debug: " Fmt "~n",
@@ -142,6 +155,8 @@
 -define(do_emergency(Fmt, As), error_logger:error_msg(Fmt, As)).
 
 -endif. %S2_NOLOG
+
+-endif. %S2_USE_LAGER
 
 %%%_* Metrics ==========================================================
 %% Luke Gorrie's favourite profiling macro.
