@@ -36,6 +36,26 @@
 -define(lift(E),   s2_maybe:lift(fun() -> E end)).
 -define(unlift(E), s2_maybe:unlift(fun() -> E end)).
 
+-define(do(F0, F1),
+        s2_maybe:do([F0, F1])).
+-define(do(F0, F1, F2),
+        s2_maybe:do([F0, F1, F2])).
+-define(do(F0, F1, F2, F3),
+        s2_maybe:do([F0, F1, F2, F3])).
+-define(do(F0, F1, F2, F3, F4),
+        s2_maybe:do([F0, F1, F2, F3, F4])).
+-define(do(F0, F1, F2, F3, F4, F5),
+        s2_maybe:do([F0, F1, F2, F3, F4, F5])).
+-define(do(F0, F1, F2, F3, F4, F5, F6),
+        s2_maybe:do([F0, F1, F2, F3, F4, F5, F6])).
+-define(do(F0, F1, F2, F3, F4, F5, F6, F7),
+        s2_maybe:do([F0, F1, F2, F3, F4, F5, F6, F7])).
+-define(do(F0, F1, F2, F3, F4, F5, F6, F7, F8),
+        s2_maybe:do([F0, F1, F2, F3, F4, F5, F6, F7, F8])).
+-define(do(F0, F1, F2, F3, F4, F5, F6, F7, F8, F9),
+        s2_maybe:do([F0, F1, F2, F3, F4, F5, F6, F7, F8, F9])).
+
+
 -define(thunk(E0),
         fun() -> E0 end).
 -define(thunk(E0, E1),
