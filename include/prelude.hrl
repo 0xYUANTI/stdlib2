@@ -190,7 +190,7 @@
 -define(do_increment(Name),
         (catch folsom_metrics:notify({?name(Name), 1}))).
 -define(do_increment(Fun, Ret),
-        do_increment([?APP, ?MODULE, Fun, Ret]).
+        ?do_increment([?APP, ?MODULE, Fun, Ret])).
 -define(do_time(Name, Expr),
         (try case is_list(Name) of
            true ->
