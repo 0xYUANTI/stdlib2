@@ -50,11 +50,11 @@ init_folsom(Metrics) ->
            F = s2_atoms:catenate(['new_', Type]),
            A = ?name(Name),
            folsom_metrics:F(A),
-           folsom_metrics:tag_metric(A, {app,  App}),
-           folsom_metrics:tag_metric(A, {mod,  Mod}),
+           folsom_metrics:tag_metric(A, {app, App}),
+           folsom_metrics:tag_metric(A, {mod, Mod}),
            folsom_metrics:tag_metric(A, {func, Func}),
-           folsom_metrics:tag_metric(A, {ret,  Ret})
-         end || {Type, [App, Mod, Func, Ret] = Name} <- Metrics]).
+           [folsom_metrics:tag_metric(A, {ret, Ret}) || Ret <- Rest]
+         end || {Type, [App, Mod, Func|Rest] = Name} <- Metrics]).
 
 %%%_* Emacs ============================================================
 %%% Local Variables:
