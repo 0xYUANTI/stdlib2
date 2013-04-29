@@ -90,13 +90,21 @@
 %%%_* Logging ==========================================================
 -ifdef(S2_USE_LAGER).
 
+-define(debug(Format),           lager:debug(Format, [])).
 -define(debug(Format, Args),     lager:debug(Format, Args)).
+-define(info(Format),            lager:info(Format, [])).
 -define(info(Format, Args),      lager:info(Format, Args)).
+-define(notice(Format),          lager:notice(Format, [])).
 -define(notice(Format, Args),    lager:notice(Format, Args)).
+-define(warning(Format),         lager:warning(Format, [])).
 -define(warning(Format, Args),   lager:warning(Format, Args)).
+-define(error(Format),           lager:error(Format, [])).
 -define(error(Format, Args),     lager:error(Format, Args)).
+-define(critical(Format),        lager:critical(Format, [])).
 -define(critical(Format, Args),  lager:critical(Format, Args)).
+-define(alert(Format),           lager:alert(Format, [])).
 -define(alert(Format, Args),     lager:alert(Format, Args)).
+-define(emergency(Format),       lager:emergency(Format, [])).
 -define(emergency(Format, Args), lager:emergency(Format, Args)).
 
 -else.
