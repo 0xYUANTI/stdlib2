@@ -196,6 +196,8 @@
 
 -else.
 
+-define(name(X), X).
+
 -define(do_increment(Name),  ok).
 -define(do_time(Name, Expr), Expr).
 
