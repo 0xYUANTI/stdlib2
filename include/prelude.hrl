@@ -189,22 +189,32 @@
 
 -define(do_increment(Name),
         (catch folsom_metrics:notify({?name(Name), 1}))).
+-define(do_increment(Fun, Ret),
+        do_increment([?APP, ?MODULE, Fun, Ret]).
 -define(do_time(Name, Expr),
-        (try folsom_metrics:histogram_timed_update(?name(Name), ?thunk(Expr))
-         catch _:_ -> Expr
+        (try case is_list(Name) of
+           true ->
+             folsom_metrics:histogram_timed_update(?name(Name),
+                                                   ?thunk(Expr));
+           false ->
+             folsom_metrics:histogram_timed_update(?name([?MODULE, ?APP, Name]),
+                                                   ?thunk(Expr))
+         end catch _:_ -> Expr
          end)).
 
 -else.
 
 -define(name(X), X).
 
--define(do_increment(Name),  ok).
--define(do_time(Name, Expr), Expr).
+-define(do_increment(Name),     ok).
+-define(do_increment(Fun, Ret), ok).
+-define(do_time(Name, Expr),    Expr).
 
 -endif.
 
--define(increment(Name),  ?do_increment(Name)).
--define(time(Name, Expr), ?do_time(Name, Expr)).
+-define(increment(Name),     ?do_increment(Name)).
+-define(increment(Fun, Ret), ?do_increment(Fun, Ret)).
+-define(time(Name, Expr),    ?do_time(Name, Expr)).
 
 %%%_* Types ============================================================
 -type alist(A, B) :: [{A, B}].
