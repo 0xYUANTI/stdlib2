@@ -8,7 +8,6 @@
 
 %%%_* Exports ==========================================================
 -export([ do/1
-        , ido/1
         , lift/1
         , lift/2
         , map/2
@@ -48,21 +47,6 @@ do_test() ->
        , Exn
        ]).
 
-
-%% @doc Instrumented do.
-ido(Fs) ->
-  case ?time(?FUNCTION, do(Fs)) of
-    {ok, _Res} = Ok ->
-      ?debug("~p: ok: ~p", [?FUNCTION, _Res]),
-      ?increment(?FUNCTION, ok),
-      Ok;
-    {error, Rsn} = Err ->
-      ?error("~p: error: ~p", [?FUNCTION, Rsn]),
-      ?increment(?FUNCTION, error),
-      Err
-  end.
-
-
 -spec lift(fun()) -> maybe(_, _).
 %% @doc lift(F) is the value of F() lifted into the maybe monad.
 lift(F) ->
@@ -75,6 +59,7 @@ lift(F) ->
     throw:{error, Rsn} -> {error, Rsn};
     _:Exn              -> {error, {lifted_exn, Exn, erlang:get_stacktrace()}}
   end.
+
 
 lift(F, X) -> lift(?thunk(F(X))).
 
