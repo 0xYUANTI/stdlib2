@@ -108,6 +108,8 @@
 %%%_* Logging ==========================================================
 -ifdef(S2_USE_LAGER).
 
+-compile([{parse_transform, lager_transform}]).
+
 -define(debug(Format),           lager:debug(Format, [])).
 -define(debug(Format, Args),     lager:debug(Format, Args)).
 -define(info(Format),            lager:info(Format, [])).
