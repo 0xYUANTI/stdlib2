@@ -8,6 +8,7 @@
 
 %%%_* Exports ==========================================================
 -export([ do/1
+        , ido/1
         , lift/1
         , lift/2
         , map/2
@@ -46,6 +47,20 @@ do_test() ->
        , fun(X) -> {error, X} end
        , Exn
        ]).
+
+
+%% @doc Instrumented do.
+ido(Fs) ->
+  case ?time(?FUNCTION, do(Fs)) of
+    {ok, _Res} = Ok ->
+      ?debug("~p: ok: ~p", [?FUNCTION, _Res]),
+      ?increment(?FUNCTION, ok),
+      Ok;
+    {error, Rsn} = Err ->
+      ?error("~p: error: ~p", [?FUNCTION, Rsn]),
+      ?increment(?FUNCTION, error),
+      Err
+  end.
 
 
 -spec lift(fun()) -> maybe(_, _).

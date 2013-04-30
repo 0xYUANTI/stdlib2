@@ -55,6 +55,24 @@
 -define(do(F0, F1, F2, F3, F4, F5, F6, F7, F8, F9),
         s2_maybe:do([F0, F1, F2, F3, F4, F5, F6, F7, F8, F9])).
 
+-define(ido(F0, F1),
+        s2_maybe:ido([F0, F1])).
+-define(ido(F0, F1, F2),
+        s2_maybe:ido([F0, F1, F2])).
+-define(ido(F0, F1, F2, F3),
+        s2_maybe:ido([F0, F1, F2, F3])).
+-define(ido(F0, F1, F2, F3, F4),
+        s2_maybe:ido([F0, F1, F2, F3, F4])).
+-define(ido(F0, F1, F2, F3, F4, F5),
+        s2_maybe:ido([F0, F1, F2, F3, F4, F5])).
+-define(ido(F0, F1, F2, F3, F4, F5, F6),
+        s2_maybe:ido([F0, F1, F2, F3, F4, F5, F6])).
+-define(ido(F0, F1, F2, F3, F4, F5, F6, F7),
+        s2_maybe:ido([F0, F1, F2, F3, F4, F5, F6, F7])).
+-define(ido(F0, F1, F2, F3, F4, F5, F6, F7, F8),
+        s2_maybe:ido([F0, F1, F2, F3, F4, F5, F6, F7, F8])).
+-define(ido(F0, F1, F2, F3, F4, F5, F6, F7, F8, F9),
+        s2_maybe:ido([F0, F1, F2, F3, F4, F5, F6, F7, F8, F9])).
 
 -define(thunk(E0),
         fun() -> E0 end).
@@ -215,6 +233,10 @@
 -define(increment(Name),     ?do_increment(Name)).
 -define(increment(Fun, Ret), ?do_increment(Fun, Ret)).
 -define(time(Name, Expr),    ?do_time(Name, Expr)).
+
+%%%_* Misc =============================================================
+-define(FUNCTION,
+        (element(2, element(2, process_info(self(), current_function))))).
 
 %%%_* Types ============================================================
 -type alist(A, B) :: [{A, B}].
