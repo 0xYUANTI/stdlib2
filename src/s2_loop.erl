@@ -52,37 +52,38 @@ for_test() ->
   for(3, fun(I) -> io:format(user, "foo~p~n", [I]) end).
 
 
--spec retry(fun()) -> _.
-%% @doc Call F every T milliseconds until it returns something other
-%% than false. Abort after N iterations unless N is infinity.
+-spec retry(fun()) -> maybe(_, _).
+%% @doc Call F every T milliseconds until it returns ok.
+%% Abort after N retries unless N is infinity.
+%% Note that F is called at least once.
 retry(F) ->
   retry(F, timer:seconds(1)).
 retry(F, T) ->
   retry(F, T, infinity).
-retry(F, T, N) when N > 0 ->
-  case F() of
-    Res when Res =:= false
-           ; Res =:= error
-           ; element(1, Res) =:= error ->
-      timer:sleep(T),
-      retry(F, T, dec(N));
-    Res -> Res
-  end;
-retry(_F, _T, 0) -> false.
+retry(F, T, N) ->
+  retry(s2_maybe:lift(F), F, T, N).
+
+retry({ok, _} = Ok, _F, _T, _N) ->
+  Ok;
+retry({error, _} = Err, _F, _T, 0) ->
+  Err;
+retry({error, _}, F, T, N) when N > 0 ->
+  timer:sleep(T),
+  retry(s2_maybe:lift(F), F, T, dec(N)).
 
 dec(infinity) -> infinity;
 dec(N)        -> N-1.
 
 retry_test() ->
   F = ?thunk(receive foo -> self() ! bar
-             after   0   -> self() ! foo, false
+             after   0   -> self() ! foo, {error, foo}
              end),
   G = ?thunk(receive bar -> ok
              after   0   -> throw(exn)
              end),
-  retry(F),
+  {ok, bar} = retry(F),
   G(),
-  retry(F, 1, 1),
+  {error, foo} = retry(F, 1, 0),
   exn = (catch G()).
 
 %%%_* Emacs ============================================================
