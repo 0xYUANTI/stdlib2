@@ -12,6 +12,7 @@
 %% Files
 -export([ cp/2
         , ls/1
+        , ls_l/1
         , mkdir/1
         , mkdir_p/1
         , mv/2
@@ -58,6 +59,12 @@ cp_test()                -> rm_rf(s2_fs:with_temp_file(
 ls(Dir)                  -> {ok, Files} = file:list_dir(Dir), Files.
 
 ls_test()                -> [_|_] = ls("/tmp").
+
+
+-spec ls_l(file())       -> [file()].
+ls_l(Dir)                -> [filename:join(Dir, File) || File <- ls(Dir)].
+
+ls_l_test()              -> ["/tmp/" ++ _|_] = ls_l("/tmp").
 
 
 -spec mkdir(file())      -> file().
