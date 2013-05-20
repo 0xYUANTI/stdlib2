@@ -253,6 +253,8 @@
 -define(FUNCTION,
         (element(2, element(2, process_info(self(), current_function))))).
 
+-define(UUID(), (s2_rand:int())).
+
 %%%_* Types ============================================================
 -type alist(A, B) :: [{A, B}].
 -type fd()        :: file:io_device().
