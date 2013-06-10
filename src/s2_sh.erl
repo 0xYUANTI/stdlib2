@@ -35,6 +35,7 @@
 
 %% Misc
 -export([ eval/1
+        , eval/2
         , host/1
         ]).
 
@@ -167,6 +168,9 @@ temp_name_test()       -> "/tmp/prefix" ++ N = temp_name("/tmp", "prefix"),
                           ?l2i(N).
 
 %%%_ * Misc ------------------------------------------------------------
+eval(Fmt, Args) ->
+  eval(lists:flatten(io_lib:format(Fmt, Args))).
+
 -spec eval(string()) -> maybe(string(), {non_neg_integer(), string()}).
 eval(Cmd) ->
   s2_fs:with_temp_file(fun(F) ->
