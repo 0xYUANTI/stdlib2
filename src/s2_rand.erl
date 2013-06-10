@@ -19,7 +19,7 @@
 
 %%%_* Code =============================================================
 -spec int() -> non_neg_integer().
-%% Return a random 128-bit integer.
+%% int() is a random 128-bit integer.
 int() -> crypto:rand_uniform(0, 1 bsl 127).
 
 
