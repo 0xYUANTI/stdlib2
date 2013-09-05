@@ -85,7 +85,7 @@
              ?error("~p: error: ~p", [?FUNCTION, ___Rsn]),
              ?increment(?FUNCTION, error),
              ___Err
-         end).
+         end)).
 
 -define(thunk(E0),
         fun() -> E0 end).
