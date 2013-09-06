@@ -76,7 +76,7 @@
 
 %% Instrumented do.
 -define(ido(Fs),
-        (case ?time(?FUNCTION, s2_maybe:do(Fs)) of
+        (case ?TIME(?FUNCTION, s2_maybe:do(Fs)) of
            {ok, ___Res} = ___Ok ->
              ?debug("~p: ok: ~p", [?FUNCTION, ___Res]),
              ?increment(?FUNCTION, ok),
@@ -208,8 +208,8 @@
            %% detect an unhandled exception.
            {__TIME, __RESULT} =
              timer:tc(erlang, apply, [fun() -> {ok, Expr} end, []]),
-           io:format("time(~s): ~18.3fms ~999p~n",
-                     [?MODULE, __TIME/1000, Tag]),
+             ?debug( "time(~s): ~18.3fms ~999p~n",
+                   , [?MODULE, __TIME/1000, Tag] ),
            case __RESULT of
              {ok, _}         -> element(2, __RESULT);
              {'EXIT', Error} -> exit(Error)
