@@ -208,7 +208,7 @@
            %% detect an unhandled exception.
            {__TIME, __RESULT} =
              timer:tc(erlang, apply, [fun() -> {ok, Expr} end, []]),
-             ?debug( "time(~s): ~18.3fms ~999p~n",
+             ?debug( "time(~s): ~18.3fms ~999p~n"
                    , [?MODULE, __TIME/1000, Tag] ),
            case __RESULT of
              {ok, _}         -> element(2, __RESULT);
