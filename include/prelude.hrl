@@ -230,8 +230,22 @@
              folsom_metrics:histogram_timed_update(?name(Name),
                                                    ?thunk(Expr));
            false ->
-             folsom_metrics:histogram_timed_update(?name([?MODULE, ?APP, Name]),
+             folsom_metrics:histogram_timed_update(?name([ ?MODULE
+                                                         , ?APP
+                                                         , Name]),
                                                    ?thunk(Expr))
+         end catch _:_ -> Expr
+         end)).
+-define(do_time_diff(Name, Time),
+        (try case is_list(Name) of
+           true ->
+             folsom_metrics:histogram_timed_notify({?name(Name),
+                                                   Time});
+           false ->
+             folsom_metrics:histogram_timed_notify({?name([ ?MODULE
+                                                          , ?APP
+                                                          , Name]),
+                                                   ?thunk(Expr)})
          end catch _:_ -> Expr
          end)).
 
@@ -255,6 +269,14 @@
            Val
          catch _:_ -> Expr
          end)).
+-define(do_time_diff(Name, Time),
+        (try case is_list(Name) of
+           true ->
+             estatsd:timing({?name(Name), Time});
+           false ->
+             estatsd:timing({?name([?MODULE, ?APP, Name]), ?thunk(Expr)})
+         end catch _:_ -> Expr
+         end)).
 
 -else. %default
 
@@ -263,14 +285,16 @@
 -define(do_increment(Name),     ok).
 -define(do_increment(Fun, Ret), ok).
 -define(do_time(Name, Expr),    Expr).
+-define(do_time_diff(Name, Time),    ok).
 
 -endif. %S2_USE_ESTATSD
 
 -endif.
 
--define(increment(Name),     ?do_increment(Name)).
--define(increment(Fun, Ret), ?do_increment(Fun, Ret)).
--define(time(Name, Expr),    ?do_time(Name, Expr)).
+-define(increment(Name),       ?do_increment(Name)).
+-define(increment(Fun, Ret),   ?do_increment(Fun, Ret)).
+-define(time(Name, Expr),      ?do_time(Name, Expr)).
+-define(time_diff(Name, Time), ?do_time_diff(Name, Time)).
 
 %%%_* Misc =============================================================
 -define(FUNCTION,
