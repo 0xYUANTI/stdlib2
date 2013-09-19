@@ -237,11 +237,34 @@
 
 -else.
 
+-ifdef(S2_USE_ESTATSD).
+
+-define(name(Xs), (s2_atoms:catenate(s2_lists:intersperse('.', Xs)))).
+
+-define(do_increment(Name),
+        (catch estatsd:increment(?name(Name)))).
+-define(do_increment(Fun, Ret),
+        ?do_increment([?APP, ?MODULE, Fun, Ret])).
+-define(do_time(Name, Expr),
+        (try Now = os:timestamp(),
+           Ret = apply(?thunk(Expr), []),
+           case is_list(Name) of
+             true  -> estatsd:timing(?name(Name), Now);
+             false -> estatsd:timing(?name([?MODULE, ?APP, Name]), Now)
+           end,
+           Ret
+         catch _:_ -> Expr
+         end)).
+
+-else. %default
+
 -define(name(X), X).
 
 -define(do_increment(Name),     ok).
 -define(do_increment(Fun, Ret), ok).
 -define(do_time(Name, Expr),    Expr).
+
+-endif. %S2_USE_ESTATSD
 
 -endif.
 
