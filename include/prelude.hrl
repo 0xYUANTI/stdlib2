@@ -246,13 +246,13 @@
 -define(do_increment(Fun, Ret),
         ?do_increment([?APP, ?MODULE, Fun, Ret])).
 -define(do_time(Name, Expr),
-        (try Now = os:timestamp(),
-           Ret = apply(?thunk(Expr), []),
+        (try
+           {Time, Val} = timer:tc(?thunk(Expr)),
            case is_list(Name) of
-             true  -> estatsd:timing(?name(Name), Now);
-             false -> estatsd:timing(?name([?MODULE, ?APP, Name]), Now)
+             true  -> estatsd:timing(?name(Name), Time);
+             false -> estatsd:timing(?name([?MODULE, ?APP, Name]), Time)
            end,
-           Ret
+           Val
          catch _:_ -> Expr
          end)).
 
