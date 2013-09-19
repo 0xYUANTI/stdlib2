@@ -237,16 +237,15 @@
          end catch _:_ -> Expr
          end)).
 -define(do_time_diff(Name, Time),
-        (try case is_list(Name) of
+        (catch case is_list(Name) of
            true ->
              folsom_metrics:histogram_timed_notify({?name(Name),
                                                    Time});
            false ->
-             folsom_metrics:histogram_timed_notify({?name([ ?MODULE
-                                                          , ?APP
-                                                          , Name]),
-                                                   ?thunk(Expr)})
-         end catch _:_ -> Expr
+             folsom_metrics:histogram_timed_notify({ ?name([ ?MODULE
+                                                           , ?APP
+                                                           , Name])
+                                                   , Time})
          end)).
 
 -else.
@@ -270,12 +269,11 @@
          catch _:_ -> Expr
          end)).
 -define(do_time_diff(Name, Time),
-        (try case is_list(Name) of
+        (catch case is_list(Name) of
            true ->
              estatsd:timing({?name(Name), Time});
            false ->
-             estatsd:timing({?name([?MODULE, ?APP, Name]), ?thunk(Expr)})
-         end catch _:_ -> Expr
+             estatsd:timing({?name([?MODULE, ?APP, Name]), Time})
          end)).
 
 -else. %default
