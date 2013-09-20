@@ -271,9 +271,9 @@
 -define(do_time_diff(Name, Time),
         (catch case is_list(Name) of
            true ->
-             estatsd:timing({?name(Name), Time});
+             estatsd:timing(?name(Name), Time);
            false ->
-             estatsd:timing({?name([?MODULE, ?APP, Name]), Time})
+             estatsd:timing(?name([?MODULE, ?APP, Name]), Time)
          end)).
 
 -else. %default
