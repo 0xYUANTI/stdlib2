@@ -19,7 +19,9 @@
 %%%_* Code =============================================================
 -spec catenate([atom() | integer() | float() | string()]) -> atom().
 %% @doc catenate(Args) is the concatenation of Args as an atom.
-catenate(Args) -> ?l2a(lists:concat(Args)).
+catenate(Args) ->
+  ?l2a(lists:concat(lists:foldr(fun(X, Acc) ->
+                                  [s2_lists:to_list(X) | Acc] end, [], Args))).
 
 catenate_test() ->
   'foo426.66000000000000000000e+02bar' = catenate([foo, 42, 666.0, "bar"]).
