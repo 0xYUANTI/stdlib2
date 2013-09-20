@@ -200,17 +200,17 @@ with_temp_dirs_error_test() ->
 -define(sha1_blocksize, 32768).
 sha1(File) ->
   case file:open(File, [binary,raw,read]) of
-    {ok, FD}         -> sha1_loop(FD, crypto:sha_init());
+    {ok, FD}         -> sha1_loop(FD, crypto:hash_init(sha));
     {error, _} = Err -> Err
   end.
 
 sha1_loop(FD, Ctx) ->
   case file:read(FD, ?sha1_blocksize) of
-    {ok, Bin}        -> sha1_loop(FD, crypto:sha_update(Ctx, Bin));
+    {ok, Bin}        -> sha1_loop(FD, crypto:hash_update(Ctx, Bin));
     {error, _} = Err -> Err;
     eof ->
       ok = file:close(FD),
-      {ok, crypto:sha_final(Ctx)}
+      {ok, crypto:hash_final(Ctx)}
   end.
 
 %%%_* Emacs ============================================================
