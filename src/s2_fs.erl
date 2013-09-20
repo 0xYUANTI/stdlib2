@@ -30,6 +30,9 @@
         , with_temp_dirs/2
         ]).
 
+-export([ sha1/1
+        ]).
+
 %%%_* Includes =========================================================
 -include_lib("eunit/include/eunit.hrl").
 -include_lib("stdlib2/include/prelude.hrl").
@@ -192,6 +195,23 @@ with_temp_dirs_error_test() ->
     (catch with_temp_dirs(2, fun([F1, F2]) -> throw({F1, F2}) end)),
   false = filelib:is_dir(F1),
   false = filelib:is_dir(F2).
+
+%%%_ * sha1 -------------------------------------------------------------
+-define(sha1_blocksize, 32768).
+sha1(File) ->
+  case file:open(File, [binary,raw,read]) of
+    {ok, FD}         -> sha1_loop(FD, crypto:sha_init());
+    {error, _} = Err -> Err
+  end.
+
+sha1_loop(FD, Ctx) ->
+  case file:read(FD, ?sha1_blocksize) of
+    {ok, Bin}        -> sha1_loop(FD, crypto:sha_update(Ctx, Bin));
+    {error, _} = Err -> Err;
+    eof ->
+      ok = file:close(FD),
+      {ok, crypto:sha_final(Ctx)}
+  end.
 
 %%%_* Emacs ============================================================
 %%% Local Variables:
