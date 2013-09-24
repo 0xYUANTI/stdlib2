@@ -254,26 +254,25 @@
 
 -define(name(Xs), (s2_atoms:catenate(s2_lists:intersperse('.', Xs)))).
 
--define(do_increment(Name),
-        (catch estatsd:increment(?name(Name)))).
--define(do_increment(Fun, Ret),
-        ?do_increment([?APP, ?MODULE, Fun, Ret])).
--define(do_time(Name, Expr),
-        (try
-           {Time, Val} = timer:tc(?thunk(Expr)),
-           case is_list(Name) of
-             true  -> estatsd:timing(?name(Name), Time);
-             false -> estatsd:timing(?name([?MODULE, ?APP, Name]), Time)
+-define(do_increment(__Name),
+        (catch estatsd:increment(?name(__Name)))).
+-define(do_increment(__Fun, __Ret),
+        ?do_increment([?APP, ?MODULE, __Fun, __Ret])).
+-define(do_time(__Name, Expr),
+        (begin
+           {__Time, __Val} = timer:tc(?thunk(Expr)),
+           case is_list(__Name) of
+             true  -> estatsd:timing(?name(__Name), __Time);
+             false -> estatsd:timing(?name([?MODULE, ?APP, __Name]), __Time)
            end,
-           Val
-         catch _:_ -> Expr
+           __Val
          end)).
--define(do_time_diff(Name, Time),
-        (catch case is_list(Name) of
+-define(do_time_diff(__Name, __Time),
+        (catch case is_list(__Name) of
            true ->
-             estatsd:timing(?name(Name), Time);
+             estatsd:timing(?name(__Name), __Time);
            false ->
-             estatsd:timing(?name([?MODULE, ?APP, Name]), Time)
+             estatsd:timing(?name([?MODULE, ?APP, __Name]), __Time)
          end)).
 
 -else. %default
