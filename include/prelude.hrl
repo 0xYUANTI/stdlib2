@@ -260,10 +260,10 @@
         ?do_increment([?APP, ?MODULE, __Fun, __Ret])).
 -define(do_time(__Name, Expr),
         (begin
-           {__Time, __Val} = timer:tc(?thunk(Expr)),
+           {__T, __Val} = timer:tc(?thunk(Expr)),
            case is_list(__Name) of
-             true  -> estatsd:timing(?name(__Name), __Time);
-             false -> estatsd:timing(?name([?MODULE, ?APP, __Name]), __Time)
+             true  -> estatsd:timing(?name(__Name), __T/1000);
+             false -> estatsd:timing(?name([?MODULE, ?APP, __Name]), __T/1000)
            end,
            __Val
          end)).
