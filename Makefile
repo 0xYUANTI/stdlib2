@@ -1,59 +1,13 @@
-# Standard Erlang Makefile
+PROJECT   = stdlib2
 
-REBAR=./rebar
-PLT=./.plt
-suite=$(if $(SUITE), suite=$(SUITE), )
+# Options
+ERLC_OPTS = +debug_info +nowarn_shadow_vars +warnings_as_errors
 
-# Basics ###############################################################
-.PHONY: all deps compile get-deps update-deps doc clean distclean
+# Standard targets
+include erlang.mk
 
-all: deps compile
-
-deps: get-deps update-deps
-
-compile:
-	$(REBAR) compile
-
-get-deps:
-	$(REBAR) get-deps
-
-update-deps:
-	$(REBAR) update-deps
-
-doc:
-	$(REBAR) doc
-
-clean:
-	$(REBAR) clean
-	$(RM) doc/*
-
-distclean: clean
-	$(REBAR) delete-deps
-
-# Utilities ############################################################
-.PHONY: repl eunit_repl
-
-repl:
-	erl -pa ebin deps/*/ebin
-
-eunit_repl:
-	erl -pa .eunit deps/*/ebin
-
-# Test Suite ###########################################################
-.PHONY: test eunit xref plt dialyzer
-
-test: eunit
-
+.PHONY: eunit
 eunit:
-	$(REBAR) eunit $(suite) skip_deps=true
-
-xref:
-	$(REBAR) xref skip_deps=true
-
-plt: compile
-	dialyzer --build_plt --output_plt $(PLT) ebin deps/*/ebin
-
-dialyzer: compile
-	dialyzer --plt $(PLT) ebin
+	erl -noshell -pa ebin -eval 'eunit:test("ebin", [verbose])' -s init stop
 
 # eof
