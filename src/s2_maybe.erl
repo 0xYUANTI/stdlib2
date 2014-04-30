@@ -19,8 +19,8 @@
         ]).
 
 %%%_* Includes =========================================================
+-include("prelude.hrl").
 -include_lib("eunit/include/eunit.hrl").
--include_lib("stdlib2/include/prelude.hrl").
 
 %%%_* Code =============================================================
 -spec do([fun()])                            -> maybe(_, _).

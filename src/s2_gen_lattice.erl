@@ -17,7 +17,7 @@
              ]).
 
 %%%_* Includes =========================================================
--include_lib("stdlib2/include/prelude.hrl").
+-include("prelude.hrl").
 
 %%%_* Code =============================================================
 behaviour_info(callbacks) ->
