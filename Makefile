@@ -7,8 +7,4 @@ COMPILE_FIRST = s2_gen_lattice
 # Standard targets
 include erlang.mk
 
-.PHONY: eunit
-eunit:
-	erl -noshell -pa ebin -eval 'eunit:test("ebin", [verbose])' -s init stop
-
 # eof
