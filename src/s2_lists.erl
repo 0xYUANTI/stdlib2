@@ -14,6 +14,7 @@
         , cons/2
         , dissoc/2
         , drop/2
+        , dsort/1
         , intersperse/2
         , is_permutation/2
         , partition/2
@@ -96,6 +97,20 @@ intersperse(X, Ys) ->
 
 intersperse_test() -> "f o o" = intersperse($ , "foo").
 
+-spec dsort(list()) -> list().
+%% @doc Sort a list and its list and proplist value elements.
+dsort(L)                              -> lists:sort(dsort_i(L)).
+dsort_i([])                           -> [];
+dsort_i([{K, V} | T]) when is_list(V) -> [{K, lists:sort(dsort_i(V))} | dsort_i(T)];
+dsort_i([H | T]) when is_list(H)      -> [lists:sort(dsort_i(H)) | dsort_i(T)];
+dsort_i([H | T])                      -> [H | dsort_i(T)].
+
+dsort_test() ->
+  [] = dsort([]),
+  [a, b] = dsort([b, a]),
+  [c, [a, b]] = dsort([[b, a], c]),
+  [{a, x}, {b, y}] = dsort([{b, y}, {a, x}]),
+  [d, {c, [{a, x}, {b, y}]}] = dsort([{c, [{b, y}, {a, x}]}, d]).
 
 -spec is_permutation([A], [A]) -> boolean().
 %% @doc is_permutation(Xs, Ys) is true iff Xs is a permutation of Ys.
