@@ -27,7 +27,7 @@ datetime_test()  -> {{_Ye, _Mo, _Da}, {_Ho, _Mi, _Se}} = datetime().
 -spec stamp() -> non_neg_integer().
 %% @doc stamp() is the number of microseconds since the Unix epoch.
 stamp()       -> stamp(os).
-stamp(now)    -> now_to_microsecs(now());
+stamp(now)    -> stamp(os);
 stamp(os)     -> now_to_microsecs(os:timestamp()).
 
 stamp_test()  -> ?assert(stamp()   < stamp()),
