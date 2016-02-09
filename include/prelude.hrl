@@ -23,6 +23,8 @@
 %%%_* Casts ============================================================
 -define(a2l(X), erlang:atom_to_list(X)).
 -define(l2a(X), erlang:list_to_atom(X)).
+-define(a2b(X), erlang:atom_to_binary(X)).
+-define(b2a(X), erlang:binary_to_atom(X)).
 -define(b2l(X), erlang:binary_to_list(X)).
 -define(l2b(X), erlang:list_to_binary(X)).
 -define(b2t(X), erlang:binary_to_term(X)).
