@@ -210,7 +210,7 @@
            %% detect an unhandled exception.
            {__TIME, __RESULT} =
              timer:tc(erlang, apply, [fun() -> {ok, Expr} end, []]),
-             ?debug( "time(~s): ~18.3fms ~999p~n"
+             ?debug( "time(~s): ~wms ~999p~n"
                    , [?MODULE, __TIME/1000, Tag] ),
            case __RESULT of
              {ok, _}         -> element(2, __RESULT);
@@ -277,16 +277,83 @@
              estatsd:timing(?name([?MODULE, ?APP, __Name]), __Time)
          end)).
 
+-else.
+
+-ifdef(S2_RIEMANN).
+
+-define(name(Xs), (?a2l(s2_atoms:catenate(s2_lists:intersperse('.', Xs))))).
+
+-define(do_increment(__Name),
+        (catch estatsd:increment(?name(__Name)))).
+-define(do_increment(__Fun, __Ret),
+        ?do_increment([?APP, ?MODULE, __Fun, __Ret])).
+-define(do_time(__Name, Expr),
+        (begin
+           {__T, __Val} = timer:tc(?thunk(Expr)),
+           case is_list(__Name) of
+             true  ->
+               katja:send_event_async([ {service, ?name([hd(__Name)])}
+                                      , {time,    s2_time:stamp()}
+                                      , {tags,    tl(__Name)}
+                                      , {metric,  round(__T/1000)}]);
+             false ->
+               katja:send_event_async([ {service, ?name([?APP])}
+                                      , {time,    s2_time:stamp()}
+                                      , {tags,    [?MODULE, __Name]}
+                                      , {metric,  round(__T/1000)}])
+           end,
+           __Val
+         end)).
+-define(do_time_diff(__Name, __Time),
+        (catch case is_list(__Name) of
+           true ->
+               katja:send_event_async(
+                 [ {service, ?name([hd(__Name)])}
+                 , {time,    s2_time:stamp()}
+                 , {tags,    tl(__Name)}
+                 , {metric,  timer:now_diff(os:timestamp(), __Time)/1000}] );
+           false ->
+               katja:send_event_async(
+                 [ {service, ?name([?APP])}
+                 , {time,    s2_time:stamp()}
+                 , {tags,    [?MODULE, __Name]}
+                 , {metric,  timer:now_diff(os:timestamp(), __Time)/1000}] )
+           end)).
+
 -else. %default
 
--define(name(X), X).
+-define(name(Xs), (s2_atoms:catenate(s2_lists:intersperse('.', Xs)))).
 
 -define(do_increment(Name),     ok).
--define(do_increment(Fun, Ret), ok).
--define(do_time(Name, Expr),    Expr).
--define(do_time_diff(Name, Time),    ok).
+-define(do_increment(Fun, Ret), Fun, ok).
+-define(do_time(__Name, __Expr),
+        (begin
+           {__T, __Val} = timer:tc(?thunk(__Expr)),
+           case is_list(__Name) of
+             true  ->
+               ?debug("time(~s): ~wms ~p~n", [?MODULE,__T/1000,?name(__Name)]);
+             false ->
+               ?debug( "time(~s): ~wms ~p~n", [?MODULE, __T/1000, __Name])
+           end,
+           __Val
+         end)).
+-define(do_time_diff(__Name, __Time),
+       (catch case is_list(__Name) of
+           true ->
+             ?debug( "time(~s): ~wms ~p~n"
+                   , [ ?MODULE
+                     , timer:now_diff(os:timestamp(), __Time)/1000
+                     , ?name(__Name) ] );
+           false ->
+             ?debug( "time(~s): ~wms ~p~n"
+                   , [ ?MODULE
+                     , timer:now_diff(os:timestamp(), __Time)/1000
+                     , __Name ] )
+           end)).
 
 -endif. %S2_USE_ESTATSD
+
+-endif. %S2_RIEMANN
 
 -endif.
 
