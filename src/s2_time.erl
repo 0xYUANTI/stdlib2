@@ -10,6 +10,7 @@
 -export([ datetime/0
         , stamp/0
         , stamp/1
+        , unix_epoch/0
         ]).
 
 %%%_* Includes =========================================================
@@ -32,6 +33,10 @@ stamp(os)     -> now_to_microsecs(os:timestamp()).
 
 stamp_test()  -> ?assert(stamp()   < stamp()),
                  ?assert(stamp(os) < stamp(os)).
+
+unix_epoch() ->
+  {MegaSecs, Secs, _} = os:timestamp(),
+  MegaSecs * 1000000 + Secs.
 
 now_to_microsecs({MegaSecs, Secs, MicroSecs}) ->
   (1000000 * 1000000 * MegaSecs) + (1000000 * Secs) + MicroSecs.

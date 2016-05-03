@@ -281,7 +281,7 @@
 
 -ifdef(S2_RIEMANN).
 
--define(name(Xs), (?a2l(s2_atoms:catenate(s2_lists:intersperse('.', Xs))))).
+-define(name(Xs), (?a2l(s2_atoms:catenate(s2_lists:intersperse('/', Xs))))).
 
 -define(do_increment(__Name),
         (catch estatsd:increment(?name(__Name)))).
@@ -292,14 +292,12 @@
            {__T, __Val} = timer:tc(?thunk(Expr)),
            case is_list(__Name) of
              true  ->
-               katja:send_event_async([ {service, ?name([hd(__Name)])}
-                                      , {time,    s2_time:stamp()}
-                                      , {tags,    tl(__Name)}
+               katja:send_event_async([ {service, ?name(__Name)}
+                                      , {time,    s2_time:unix_epoch()}
                                       , {metric,  round(__T/1000)}]);
              false ->
-               katja:send_event_async([ {service, ?name([?APP])}
-                                      , {time,    s2_time:stamp()}
-                                      , {tags,    [?MODULE, __Name]}
+               katja:send_event_async([ {service, ?name([?APP, ?MODULE])}
+                                      , {time,    s2_time:unix_epoch()}
                                       , {metric,  round(__T/1000)}])
            end,
            __Val
@@ -308,15 +306,13 @@
         (catch case is_list(__Name) of
            true ->
                katja:send_event_async(
-                 [ {service, ?name([hd(__Name)])}
-                 , {time,    s2_time:stamp()}
-                 , {tags,    tl(__Name)}
+                 [ {service, ?name(__Name)}
+                 , {time,    s2_time:unix_epoch()}
                  , {metric,  timer:now_diff(os:timestamp(), __Time)/1000}] );
            false ->
                katja:send_event_async(
-                 [ {service, ?name([?APP])}
-                 , {time,    s2_time:stamp()}
-                 , {tags,    [?MODULE, __Name]}
+                 [ {service, ?name([?APP, ?MODULE])}
+                 , {time,    s2_time:unix_epoch()}
                  , {metric,  timer:now_diff(os:timestamp(), __Time)/1000}] )
            end)).
 
