@@ -27,11 +27,20 @@ datetime_test()  -> {{_Ye, _Mo, _Da}, {_Ho, _Mi, _Se}} = datetime().
 -spec stamp() -> non_neg_integer().
 %% @doc stamp() is the number of microseconds since the Unix epoch.
 stamp()       -> stamp(now).
+
+-ifdef(has_erlang_now).
 stamp(now)    -> now_to_microsecs(now());
 stamp(os)     -> now_to_microsecs(os:timestamp()).
+-else.
+stamp(now)    -> monotonic_us();
+stamp(os)     -> now_to_microsecs(os:timestamp()).
 
-stamp_test()  -> ?assert(stamp()   < stamp()),
-                 ?assert(stamp(os) < stamp(os)).
+monotonic_us() ->
+    erlang:monotonic_time(micro_seconds) + erlang:time_offset(micro_seconds).
+-endif.
+
+stamp_test() -> ?assert(stamp()   < stamp()),
+                ?assert(stamp(os) < stamp(os)).
 
 now_to_microsecs({MegaSecs, Secs, MicroSecs}) ->
   (1000000 * 1000000 * MegaSecs) + (1000000 * Secs) + MicroSecs.

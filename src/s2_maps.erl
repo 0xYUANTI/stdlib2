@@ -31,25 +31,28 @@
         , update/4
         ]).
 
--export_type([ map/0
-             ]).
+-export_type([ t/0 ]).
 
 %%%_* Includes =========================================================
 -include_lib("eunit/include/eunit.hrl").
 -include_lib("stdlib2/include/prelude.hrl").
 
 %%%_* Code =============================================================
--type map() :: dict().
+-ifdef(no_namespaced_types).
+-type t() :: dict().
+-else.
+-type t() :: dict:dict().
+-endif.
 
--spec new() -> map().
+-spec new() -> t().
 %% @doc Return a fresh map.
 new() -> dict:new().
 
--spec set(map(), [_], _) -> map().
+-spec set(t(), [_], _) -> t().
 %% @doc Set the leaf reachable via Ks in Map to V.
 set(Map, Ks, V) -> update(Map, Ks, fun(_) -> V end, V).
 
--spec update(map(), [_], fun(), _) -> map().
+-spec update(t(), [_], fun(), _) -> t().
 %% @doc Update the leaf reachable via Ks in Map to the result of
 %% applying F to its current value or V if it doesn't have one.
 update(Map, [K], F, V) ->
@@ -65,7 +68,7 @@ dict_update(K, F, Thunk, Dict) ->
     error   -> dict:store(K, Thunk(), Dict)
   end.
 
--spec get(map(), [_]) -> maybe(_, notfound).
+-spec get(t(), [_]) -> maybe(_, notfound).
 %% @doc Look up the value associated with the leaf reachable via Ks in
 %% Map.
 get(Map, [K]) ->
@@ -85,7 +88,7 @@ get(Map, Ks, Default) ->
     {error, notfound} -> Default
   end.
 
--spec delete(map(), [_]) -> map().
+-spec delete(t(), [_]) -> t().
 %% @doc Prune everything below Ks from Map.
 delete(Map, [K]) ->
   dict:erase(K, Map);
@@ -95,7 +98,7 @@ delete(Map, [K|Ks]) ->
     error   -> Map
   end.
 
--spec to_list(map()) -> [_].
+-spec to_list(t()) -> [_].
 %% @doc Return the list-representation of Map.
 to_list(Map) ->
   to_list({dict:to_list(Map), []}, [], []).

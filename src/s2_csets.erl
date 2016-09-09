@@ -41,7 +41,11 @@
 
 %%%_* Code =============================================================
 %%%_ * Types -----------------------------------------------------------
+-ifdef(no_namespaced_types).
 -opaque cset()                  :: {mode(), dict()}.
+-else.
+-opaque cset()                  :: {mode(), dict:dict()}.
+-endif.
 -type mode()                    :: cset | set.
 
 %%%_ * gen_lattice callbacks -------------------------------------------
