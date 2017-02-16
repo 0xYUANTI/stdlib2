@@ -18,6 +18,7 @@
         , intersperse/2
         , is_permutation/2
         , partition/2
+        , position/2
         , repeatedly/2
         , take/2
         , to_list/1
@@ -141,6 +142,20 @@ partition_test() ->
   [[1, 2], [3]]    = partition(2, [1, 2, 3]),
   [[1, 2], [3, 4]] = partition(2, [1, 2, 3, 4]).
 
+-spec position(_, [_]) -> pos_integer() | notfound.
+%% @doc posistion(Elem, Xs) is the position of Elem in Xs or notfound
+position(Elem, Xs) when is_list(Xs) -> position(Elem, Xs, 1).
+
+position(_, [], _)          -> notfound;
+position(Elem, [Elem|_], N) -> N;
+position(Elem, [_|Xs], N)   -> position(Elem, Xs, N+1).
+
+position_test() ->
+  notfound         = position(x, []),
+  1                = position(a, [a,b,c]),
+  2                = position(b, [a,b,c]),
+  3                = position(c, [a,b,c]),
+  notfound         = position(d, [a,b,c]).
 
 -spec repeatedly(non_neg_integer(), fun(() -> A)) -> [A].
 %% @doc repeatedly(N, F) is a list of the results of N calls to F.
