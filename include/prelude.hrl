@@ -133,6 +133,20 @@
 -define(notice(Format, Args),    lager:notice(Format, Args)).
 -define(warning(Format),         lager:warning(Format, [])).
 -define(warning(Format, Args),   lager:warning(Format, Args)).
+
+-ifdef(S2_USE_LAGER_BUT_NOT_FOR_ERRORS).
+
+-define(error(Format),           error_logger:error_msg(Format)).
+-define(error(Format, Args),     error_logger:error_msg(Format, Args)).
+-define(critical(Format),        error_logger:error_msg(Format)).
+-define(critical(Format, Args),  error_logger:error_msg(Format, Args)).
+-define(alert(Format),           error_logger:error_msg(Format)).
+-define(alert(Format, Args),     error_logger:error_msg(Format, Args)).
+-define(emergency(Format),       error_logger:error_msg(Format)).
+-define(emergency(Format, Args), error_logger:error_msg(Format, Args)).
+
+-else. %default
+
 -define(error(Format),           lager:error(Format, [])).
 -define(error(Format, Args),     lager:error(Format, Args)).
 -define(critical(Format),        lager:critical(Format, [])).
@@ -141,6 +155,8 @@
 -define(alert(Format, Args),     lager:alert(Format, Args)).
 -define(emergency(Format),       lager:emergency(Format, [])).
 -define(emergency(Format, Args), lager:emergency(Format, Args)).
+
+-endif. %S2_USE_LAGER_BUT_NOT_FOR_ERRORS
 
 -else.
 
