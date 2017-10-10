@@ -20,13 +20,13 @@
 %%%_* Code =============================================================
 -spec int() -> non_neg_integer().
 %% int() is a random 128-bit integer.
-int() -> crypto:rand_uniform(0, 1 bsl 127).
+int() -> rand:uniform(1 bsl 127) - 1.
 
 
 -spec numbers(pos_integer(), pos_integer()) -> [pos_integer()].
 %% @doc numbers(N, Max) is a list of N random numbers between 0 and
 %% Max-1.
-numbers(N, Max) -> [crypto:rand_uniform(0, Max) || _ <- lists:seq(1, N)].
+numbers(N, Max) -> [rand:uniform(Max) - 1 || _ <- lists:seq(1, N)].
 
 numbers_test() ->
   Max       = 1 bsl 127,
@@ -40,7 +40,7 @@ numbers_test() ->
 
 -spec pick([A]) -> A.
 %% @doc pick(Xs) is a random element of Xs.
-pick(Xs) -> lists:nth(crypto:rand_uniform(1, length(Xs) + 1), Xs).
+pick(Xs) -> lists:nth(rand:uniform(length(Xs)), Xs).
 
 pick_test() ->
   foo  = pick([foo]),
@@ -51,7 +51,7 @@ pick_test() ->
 -spec shuffle([_]) -> [_].
 %% @doc shuffle(Xs) is a random permutation of Xs.
 shuffle(Xs) ->
-  [X || {_N, X} <- lists:keysort(1, [{crypto:rand_uniform(0, length(Xs)), X} ||
+  [X || {_N, X} <- lists:keysort(1, [{rand:uniform(length(Xs)) - 1, X} ||
                                       X <- Xs])].
 
 shuffle_test() ->
