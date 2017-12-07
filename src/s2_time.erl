@@ -40,7 +40,7 @@ monotonic_us() ->
 -endif.
 
 stamp_test() -> ?assert(stamp()   < stamp()),
-                ?assert(stamp(os) < stamp(os)).
+                ?assert(stamp(now) < stamp(now)).
 
 now_to_microsecs({MegaSecs, Secs, MicroSecs}) ->
   (1000000 * 1000000 * MegaSecs) + (1000000 * Secs) + MicroSecs.
