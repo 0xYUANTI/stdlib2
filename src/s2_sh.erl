@@ -162,7 +162,7 @@ mktemp_d_test()        -> rmdir(mktemp_d()).
 
 temp_name(Dir, "")     -> temp_name(Dir ++ "/");
 temp_name(Dir, Prefix) -> temp_name(filename:join(Dir, Prefix)).
-temp_name(Stem)        -> Stem ++ ?i2l(crypto:rand_uniform(0, 1 bsl 127)).
+temp_name(Stem)        -> Stem ++ ?i2l(rand:uniform(1 bsl 127) - 1).
 
 temp_name_test()       -> "/tmp/prefix" ++ N = temp_name("/tmp", "prefix"),
                           ?l2i(N).
