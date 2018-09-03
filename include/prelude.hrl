@@ -217,6 +217,16 @@
 
 -endif. %S2_USE_LAGER
 
+-define(failed(Rsn, Extras), ?error( "Error: ~p"
+                                   , [ {failed, Rsn
+                                       , [ {module,         ?MODULE}
+                                         , {function_name,  ?FUNCTION_NAME}
+                                         , {function_arity, ?FUNCTION_ARITY}
+                                         , {line,           ?LINE}
+                                         | Extras
+                                         ]}])).
+-define(failed(Rsn),         ?failed(Rsn, [])).
+
 %%%_* Metrics ==========================================================
 %% Luke Gorrie's favourite profiling macro.
 -define(TIME(Tag, Expr),
