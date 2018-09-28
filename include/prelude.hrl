@@ -21,6 +21,7 @@
          end)).
 
 %%%_* Casts ============================================================
+-define(a2b(X), erlang:atom_to_binary(X, utf8)).
 -define(a2l(X), erlang:atom_to_list(X)).
 -define(l2a(X), erlang:list_to_atom(X)).
 -define(b2l(X), erlang:binary_to_list(X)).
