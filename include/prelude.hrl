@@ -218,12 +218,18 @@
 
 -endif. %S2_USE_LAGER
 
+%% Implementation from http://erlang.org/eeps/eep-0045.md
+-define(FUNCTION_STRING,
+        ?MODULE_STRING ++ ":" ++
+          atom_to_list(?FUNCTION_NAME) ++ "/" ++
+          integer_to_list(?FUNCTION_ARITY)).
+
+-define(FUNCTION_BIN, iolist_to_binary(?FUNCTION_STRING)).
+
 -define(failed(Rsn, Extras), ?error( "Error: ~p"
                                    , [ {failed, Rsn
-                                       , [ {module,         ?MODULE}
-                                         , {function_name,  ?FUNCTION_NAME}
-                                         , {function_arity, ?FUNCTION_ARITY}
-                                         , {line,           ?LINE}
+                                       , [ {function, ?FUNCTION_BIN}
+                                         , {line,     ?LINE}
                                          | Extras
                                          ]}])).
 -define(failed(Rsn),         ?failed(Rsn, [])).
