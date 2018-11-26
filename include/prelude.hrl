@@ -234,6 +234,14 @@
                                          ]}])).
 -define(failed(Rsn),         ?failed(Rsn, [])).
 
+-define( exception(Class, Reason, Stacktrace, Extras)
+       , ?error( "Exception: ~p\n"
+                 "Extras: ~p"
+               , [{{Class, Reason}, Stacktrace}, Extras])).
+
+-define( exception(Class, Reason, Stacktrace)
+       , ?exception(Class, Reason, Stacktrace, [])).
+
 %%%_* Metrics ==========================================================
 %% Luke Gorrie's favourite profiling macro.
 -define(TIME(Tag, Expr),
