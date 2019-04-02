@@ -259,6 +259,19 @@
            end
          end)()).
 
+-ifdef(S2_USE_KIVRA_METRICS).
+
+-define(do_increment(__Name),
+        (kivra_metrics:increase_counter([?APP | __Name]))).
+-define(do_increment(__Fun, __Ret),
+        ?do_increment([?MODULE, __Fun, __Ret])).
+-define(do_time(__Name, __Expr),
+        (kivra_metrics:time_mfa([?APP | __Name], ?thunk(__Expr)))).
+-define(do_time_diff(__Name, __Time),
+        (kivra_metrics:time_diff([?APP | __Name], __Time))).
+
+-else.
+
 -ifdef(S2_USE_FOLSOM).
 
 -define(name(Xs), (s2_atoms:catenate(s2_lists:intersperse('_', Xs)))).
@@ -397,6 +410,8 @@
 -endif. %S2_USE_ESTATSD
 
 -endif. %S2_RIEMANN
+
+-endif.
 
 -endif.
 
