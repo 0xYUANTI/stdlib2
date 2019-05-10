@@ -7,12 +7,10 @@
 -ifndef(__PRELUDE_HRL).
 -define(__PRELUDE_HRL, true).
 
+-include_lib("stdlib/include/assert.hrl").
+
 %%%_* Assertions =======================================================
--define(hence(A),
-        (case A of
-           true -> ok;
-           _    -> throw({error, {assert, {??A, '=', true}, ?FILE, ?LINE}})
-         end)).
+-define(hence(A), ?assert(A)).
 
 -define(given(A, B),
         (case ((not (A)) orelse (B)) of
