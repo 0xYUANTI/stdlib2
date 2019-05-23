@@ -24,6 +24,7 @@
 %%%_* Exports ==========================================================
 -export([ luhn/1
         , luhn_validate/1
+        , md5/1
         , sha256/1
         ]).
 
@@ -31,7 +32,6 @@
 -include_lib("eunit/include/eunit.hrl").
 
 %%%_* Code =============================================================
-
 -spec luhn(string()) -> integer().
 luhn(String) when is_binary(String) ->
   luhn(binary_to_list(String));
@@ -58,11 +58,19 @@ luhn_fold(X, {odd, Sum}) ->
 luhn_fold(X, {even, Sum}) ->
   {odd, Sum + X}.
 
+-spec md5(iodata()) -> binary().
+md5(Data) ->
+  hash_to_bin(crypto:hash(md5, Data)).
+
 -spec sha256(iodata()) -> binary().
 sha256(Data) ->
+  hash_to_bin(crypto:hash(sha256, Data)).
+
+%%%_* Private functions ================================================
+hash_to_bin(Hash) ->
   list_to_binary(
     [ element(C+1, {$0,$1,$2,$3,$4,$5,$6,$7,$8,$9,$a,$b,$c,$d,$e,$f})
-      || <<C:4>> <= crypto:hash(sha256, Data) ] ).
+      || <<C:4>> <= Hash ] ).
 
 %%%_* Tests ============================================================
 -ifdef(TEST).
@@ -89,6 +97,18 @@ dogfood_test() ->
     Str = "1234567890",
     Lund = Str ++ integer_to_list(luhn(Str)),
     ?assertEqual(true, luhn_validate(Lund)).
+
+md5_test_() ->
+  [ ?_assertEqual(
+       <<"d41d8cd98f00b204e9800998ecf8427e">>,
+       md5(""))
+  , ?_assertEqual(
+       <<"900150983cd24fb0d6963f7d28e17f72">>,
+       md5("abc"))
+  , ?_assertEqual(
+       <<"900150983cd24fb0d6963f7d28e17f72">>,
+       md5(<<"abc">>))
+  ].
 
 sha256_test_() ->
   [ ?_assertEqual(
