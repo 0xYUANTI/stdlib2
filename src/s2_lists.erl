@@ -182,6 +182,7 @@ take_test() ->
 to_list(X) when is_atom(X)    -> ?a2l(X);
 to_list(X) when is_binary(X)  -> ?b2l(X);
 to_list(X) when is_integer(X) -> ?i2l(X);
+to_list(X) when is_float(X)   -> ?f2l(X);
 to_list(X) when is_list(X)    -> X;
 to_list(X) when is_pid(X)     -> pid_to_list(X);
 to_list(X) when is_tuple(X)   -> ?t2l(X).

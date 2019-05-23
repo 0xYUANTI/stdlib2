@@ -62,7 +62,7 @@ flush_test() ->
 -spec is_up(proc()) -> boolean().
 %% @doc is_up(Proc) is true iff Proc is running.
 is_up(Proc) ->
-  erlang:demonitor(erlang:monitor(process, pid(Proc)), [info, flush]).
+  is_process_alive(Proc).
 
 is_up_test() ->
   Pid1  = spawn(?thunk(ok)),

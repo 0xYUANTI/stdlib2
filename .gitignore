@@ -3,3 +3,4 @@ deps/
 *.app
 .eunit/
 *.plt
+_build

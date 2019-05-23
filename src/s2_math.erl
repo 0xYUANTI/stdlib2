@@ -48,15 +48,15 @@ ceil_test_() ->
     ].
 
 floor_test_() ->
-    [ ?_assertEqual(0,              floor(0))
-    , ?_assertEqual(0,              floor(0.0))
-    , ?_assertEqual(-1,             floor(-1))
-    , ?_assertEqual(-2,             floor(-1.1))
-    , ?_assertEqual(0,              floor(0.1))
-    , ?_assertEqual(42,             floor(42))
-    , ?_assertEqual(42,             floor(42.1))
-    , ?_assertEqual(999999999999,   floor(999999999999.0001))
-    , ?_assertEqual(-1000000000000, floor(-999999999999.0001))
+    [ ?_assertEqual(0,              s2_math:floor(0))
+    , ?_assertEqual(0,              s2_math:floor(0.0))
+    , ?_assertEqual(-1,             s2_math:floor(-1))
+    , ?_assertEqual(-2,             s2_math:floor(-1.1))
+    , ?_assertEqual(0,              s2_math:floor(0.1))
+    , ?_assertEqual(42,             s2_math:floor(42))
+    , ?_assertEqual(42,             s2_math:floor(42.1))
+    , ?_assertEqual(999999999999,   s2_math:floor(999999999999.0001))
+    , ?_assertEqual(-1000000000000, s2_math:floor(-999999999999.0001))
     ].
 
 -endif.

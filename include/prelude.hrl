@@ -27,6 +27,7 @@
 -define(b2t(X), erlang:binary_to_term(X)).
 -define(t2b(X), erlang:term_to_binary(X)).
 -define(i2l(X), erlang:integer_to_list(X)).
+-define(f2l(X), erlang:float_to_list(X)).
 -define(l2i(X), erlang:list_to_integer(X)).
 -define(i2b(X), erlang:integer_to_binary(X)).
 -define(b2i(X), erlang:binary_to_integer(X)).
