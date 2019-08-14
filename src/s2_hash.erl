@@ -24,6 +24,7 @@
 %%%_* Exports ==========================================================
 -export([ luhn/1
         , luhn_validate/1
+        , mod97_validate/1
         , md5/1
         , sha256/1
         ]).
@@ -58,6 +59,23 @@ luhn_fold(X, {odd, Sum}) ->
 luhn_fold(X, {even, Sum}) ->
   {odd, Sum + X}.
 
+%% @doc 1. Move the four initial characters to the end of the string
+%%      2. Replace each letter in the string with two digits, thereby
+%%         expanding the string, where A = 10, B = 11, ..., Z = 35
+%%      3. Interpret the string as a decimal integer and compute the remainder
+%%         of that number on division by 97
+mod97_validate(<<Four:4/binary, Rest/binary>>) ->
+  Int = list_to_integer(
+          lists:concat(
+            lists:reverse(
+              lists:foldl(fun(I, Acc) when I >= 48, I =< 57  -> [I-48 | Acc];
+                             (C, Acc) when C >= 97, C =< 122 -> [C-87 | Acc]
+                          end,
+                          [],
+                          binary_to_list(
+                            string:lowercase(<<Rest/binary, Four/binary>>))))) ),
+  1 =:= (Int rem 97).
+
 -spec md5(iodata()) -> binary().
 md5(Data) ->
   hash_to_bin(crypto:hash(md5, Data)).
@@ -91,6 +109,12 @@ luhn_validate_test_() ->
   , ?_assertEqual(false, luhn_validate("79927398718"))
   , ?_assertEqual(false, luhn_validate("79927398719"))
   , ?_assertEqual(false, luhn_validate("79927398710"))
+  ].
+
+mod97_validate_test_() ->
+  [ ?_assertEqual(false, mod97_validate(<<"123456">>))
+  , ?_assertEqual(true, mod97_validate(<<"RF485000056789012345">>))
+  , ?_assertEqual(true, mod97_validate(<<"FI2112345600000785">>))
   ].
 
 dogfood_test() ->
