@@ -43,7 +43,7 @@ gen_vertices(Vertices) ->
   lists:flatmap(fun gen_vertex/1, Vertices).
 
 gen_vertex({Vertex, Label}) ->
-  io_lib:format("~s [label=~p];~n", [Vertex, Label]).
+  io_lib:format("~s [label=\"~s\"];~n", [Vertex, Label]).
 
 gen_edges(Edges) ->
   lists:flatmap(fun gen_edge/1, Edges).
