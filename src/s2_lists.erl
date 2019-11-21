@@ -26,7 +26,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 -spec assoc(alist(A, B), A) -> maybe(B, notfound).
@@ -37,9 +39,11 @@ assoc(L, K) ->
     false  -> {error, notfound}
   end.
 
+-ifdef(TEST).
 assoc2_test() ->
   {ok, bar}         = assoc([{baz, quux}, {foo, bar}], foo),
   {error, notfound} = assoc([],                        foo).
+-endif.
 
 
 -spec assoc(alist(A, B), A, B) -> B.
@@ -50,9 +54,11 @@ assoc(KVs, K, Def) ->
     {error, notfound} -> Def
   end.
 
+-ifdef(TEST).
 assoc3_test() ->
   bar = assoc([{foo, bar}], foo, bar),
   bar = assoc([],           foo, bar).
+-endif.
 
 
 -spec butlast([A,...]) -> [A].
@@ -60,7 +66,9 @@ assoc3_test() ->
 butlast([_])           -> [];
 butlast([X|Xs])        -> [X|butlast(Xs)].
 
+-ifdef(TEST).
 butlast_test()         -> [foo] = butlast([foo, bar]).
+-endif.
 
 
 -spec cons(_, _) -> maybe_improper_list().
@@ -68,15 +76,19 @@ butlast_test()         -> [foo] = butlast([foo, bar]).
 cons(Car, Cdr)   -> [Car|Cdr].
 cons(Car)        -> fun(Cdr) -> cons(Car, Cdr) end.
 
+-ifdef(TEST).
 cons_test()      -> [foo, bar|baz] = (cons(foo))(cons(bar, baz)).
+-endif.
 
 
 -spec dissoc(alist(A, _), A) -> alist(A, _).
 %% @doc dissoc(KVs, K) is KVs with all K-entries removed.
 dissoc(KVs, K) -> lists:filter(fun({Key, _Val}) -> Key =/= K end, KVs).
 
+-ifdef(TEST).
 dissoc_test() ->
   [{bar, 1}, {baz, 3}] = dissoc([{foo, 0}, {bar, 1}, {foo, 2}, {baz, 3}], foo).
+-endif.
 
 
 -spec drop(integer(), [_]) -> [_].
@@ -86,9 +98,11 @@ drop(N, Xs) when N =< 0    -> Xs;
 drop(_, [])                -> [];
 drop(N, [_|Xs])            -> drop(N - 1, Xs).
 
+-ifdef(TEST).
 drop_test() ->
   [baz] = drop(2, [foo, bar, baz]),
   []    = drop(2, []).
+-endif.
 
 
 -spec intersperse(_, [_]) -> [_].
@@ -96,7 +110,9 @@ drop_test() ->
 intersperse(X, Ys) ->
   lists:reverse(tl(lists:foldl(fun(Y, Acc) -> [X, Y|Acc] end, [], Ys))).
 
+-ifdef(TEST).
 intersperse_test() -> "f o o" = intersperse($ , "foo").
+-endif.
 
 -spec dsort(list()) -> list().
 %% @doc Sort a list and its list and proplist value elements.
@@ -106,20 +122,24 @@ dsort_i([{K, V} | T]) when is_list(V) -> [{K, lists:sort(dsort_i(V))} | dsort_i(
 dsort_i([H | T]) when is_list(H)      -> [lists:sort(dsort_i(H)) | dsort_i(T)];
 dsort_i([H | T])                      -> [H | dsort_i(T)].
 
+-ifdef(TEST).
 dsort_test() ->
   [] = dsort([]),
   [a, b] = dsort([b, a]),
   [c, [a, b]] = dsort([[b, a], c]),
   [{a, x}, {b, y}] = dsort([{b, y}, {a, x}]),
   [d, {c, [{a, x}, {b, y}]}] = dsort([{c, [{b, y}, {a, x}]}, d]).
+-endif.
 
 -spec is_permutation([A], [A]) -> boolean().
 %% @doc is_permutation(Xs, Ys) is true iff Xs is a permutation of Ys.
 is_permutation(Xs, Ys) -> lists:sort(Xs) =:= lists:sort(Ys).
 
+-ifdef(TEST).
 is_permutation_test() ->
   true  = is_permutation([foo, bar, baz], [baz, bar, foo]),
   false = is_permutation([foo, bar, baz], [baz, bar, quux]).
+-endif.
 
 
 -spec partition(pos_integer(), [_]) -> [[_]] | [].
@@ -135,12 +155,14 @@ partition(N, Xs)
     {false, false} -> []
   end.
 
+-ifdef(TEST).
 partition_test() ->
   []               = partition(2, []),
   [[1]]            = partition(2, [1]),
   [[1, 2]]         = partition(2, [1, 2]),
   [[1, 2], [3]]    = partition(2, [1, 2, 3]),
   [[1, 2], [3, 4]] = partition(2, [1, 2, 3, 4]).
+-endif.
 
 -spec position(_, [_]) -> pos_integer() | notfound.
 %% @doc posistion(Elem, Xs) is the position of Elem in Xs or notfound
@@ -150,19 +172,23 @@ position(_, [], _)          -> notfound;
 position(Elem, [Elem|_], N) -> N;
 position(Elem, [_|Xs], N)   -> position(Elem, Xs, N+1).
 
+-ifdef(TEST).
 position_test() ->
   notfound         = position(x, []),
   1                = position(a, [a,b,c]),
   2                = position(b, [a,b,c]),
   3                = position(c, [a,b,c]),
   notfound         = position(d, [a,b,c]).
+-endif.
 
 -spec repeatedly(non_neg_integer(), fun(() -> A)) -> [A].
 %% @doc repeatedly(N, F) is a list of the results of N calls to F.
 repeatedly(N, F) when is_integer(N) , N > 0 -> [F()|repeatedly(N - 1, F)];
 repeatedly(0, F) when is_function(F, 0)     -> [].
 
+-ifdef(TEST).
 repeatedly_test() -> [foo, foo] = repeatedly(2, fun() -> foo end).
+-endif.
 
 
 -spec take(integer(), [_]) -> [_].
@@ -172,9 +198,11 @@ take(N, _) when N =< 0     -> [];
 take(_, [])                -> [];
 take(N, [X|Xs])            -> [X|take(N - 1, Xs)].
 
+-ifdef(TEST).
 take_test() ->
   [1, 2] = take(2, [1, 2, 3]),
   [1]    = take(2, [1]).
+-endif.
 
 
 -spec to_list(_)              -> [_].
@@ -187,6 +215,7 @@ to_list(X) when is_list(X)    -> X;
 to_list(X) when is_pid(X)     -> pid_to_list(X);
 to_list(X) when is_tuple(X)   -> ?t2l(X).
 
+-ifdef(TEST).
 to_list_test() ->
   "atom"     = to_list(atom),
   "bin"      = to_list(<<"bin">>),
@@ -195,6 +224,7 @@ to_list_test() ->
   []         = to_list([]),
   "<" ++ _   = to_list(self()),
   [foo, bar] = to_list({foo, bar}).
+-endif.
 
 %%%_* Emacs =============================================================
 %%% Local Variables:

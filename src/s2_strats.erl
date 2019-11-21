@@ -32,9 +32,6 @@
         , worker_supervisor_strat/1
         ]).
 
-%%%_* Includes =========================================================
--include_lib("eunit/include/eunit.hrl").
-
 %%%_* Code =============================================================
 %% @doc Return our default spec for supervisors which supervise
 %% other supervisors. Propagates crashes upwards in the tree.
@@ -66,12 +63,6 @@ supervisor_spec(M) ->
   supervisor_spec(M, []).
 supervisor_spec(M, A) ->
   {M, {M, start_link, A}, permanent, infinity, supervisor, [M]}.
-
-%%%_* Tests ============================================================
--ifdef(TEST).
--include_lib("eunit/include/eunit.hrl").
-
--endif.
 
 %%%_* Emacs ============================================================
 %%% Local Variables:

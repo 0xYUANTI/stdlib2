@@ -20,7 +20,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 -spec do([fun()])                            -> maybe(_, _).
@@ -31,6 +33,7 @@ do(_,      {error, Rsn})                     -> {error, Rsn};
 do([F|Fs], {ok, _}) when is_function(F, 0)   -> do(Fs, lift(F));
 do([F|Fs], {ok, Res}) when is_function(F, 1) -> do(Fs, lift(F, Res)).
 
+-ifdef(TEST).
 do_test() ->
   {ok, 42} =
     do([ fun()  -> 1        end
@@ -46,6 +49,7 @@ do_test() ->
        , fun(X) -> {error, X} end
        , Exn
        ]).
+-endif.
 
 -spec lift(fun()) -> maybe(_, _).
 %% @doc lift(F) is the value of F() lifted into the maybe monad.
@@ -75,6 +79,7 @@ unlift(F) ->
 
 unlift(F, X) -> unlift(?thunk(F(X))).
 
+-ifdef(TEST).
 lift_unlift_test() ->
   {ok, ok}       = ?lift(?unlift(?lift(ok))),
   {ok, ok}       = ?lift(?unlift(?lift({ok, ok}))),
@@ -86,6 +91,7 @@ lift_unlift_test() ->
   {ok, ok}       = ?lift(ok),
   {ok, 42}       = lift(fun(X) -> X end, 42),
   42             = unlift(fun(X) -> {ok, X} end, 42).
+-endif.
 
 
 -spec map(fun(), [_]) -> maybe(_, _).
@@ -93,10 +99,12 @@ lift_unlift_test() ->
 %% monad.
 map(F, Xs) -> ?lift([?unlift(F(X)) || X <- Xs]).
 
+-ifdef(TEST).
 map_test() ->
   {ok, [1, 2]} = map(fun(X) -> X + 1       end, [0, 1]),
   {ok, [1, 2]} = map(fun(X) -> {ok, X + 1} end, [0, 1]),
   {error, _}   = map(fun(X) -> X + 1       end, [0, foo]).
+-endif.
 
 
 -spec reduce(fun(), [_]) -> maybe(_, _).
@@ -107,10 +115,12 @@ reduce(F, [Acc0|Xs]) ->
 reduce(F, Acc0, Xs) ->
   ?lift(lists:foldl(fun(X, Acc) -> ?unlift(F(X, Acc)) end, Acc0, Xs)).
 
+-ifdef(TEST).
 reduce_test() ->
   {ok, 1}    = reduce(fun(X, Y) -> X + Y       end, [0, 1]),
   {ok, 1}    = reduce(fun(X, Y) -> {ok, X + Y} end, [0, 1]),
   {error, _} = reduce(fun(X, Y) -> X + Y       end, [0, foo]).
+-endif.
 
 
 -spec to_bool(maybe(_, _)) -> boolean().
@@ -118,9 +128,11 @@ reduce_test() ->
 to_bool({ok, _})           -> true;
 to_bool({error, _})        -> false.
 
+-ifdef(TEST).
 to_bool_test() ->
   true  = to_bool({ok, foo}),
   false = to_bool({error, foo}).
+-endif.
 
 %%%_* Emacs ============================================================
 %%% Local Variables:

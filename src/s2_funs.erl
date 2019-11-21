@@ -19,7 +19,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 -spec fix(fun(), _) -> _ | no_return().
@@ -34,19 +36,23 @@ fix(X1, X2, F, Eq) ->
     false -> fix(X2, F(X2), F, Eq)
   end.
 
+-ifdef(TEST).
 fix_test() ->
   2 = fix(fun(X) when X rem 2 =:= 0 -> X;
              (X) when X rem 2 =:= 1 -> X+1
           end, 1).
+-endif.
 
 
 -spec flip(fun((A, B) -> C)) -> fun((B, A) -> C).
 %% @doc flip(F) is F with reversed argument order.
 flip(F) -> fun(X, Y) -> F(Y, X) end.
 
+-ifdef(TEST).
 flip_test() ->
   [0|1] = s2_lists:cons(0, 1),
   [1|0] = (flip(fun s2_lists:cons/2))(0, 1).
+-endif.
 
 
 -spec o([fun()]) -> fun().
@@ -58,6 +64,7 @@ o(F, G, H)       -> o([F, G, H]).
 do_o([],     X)  -> X;
 do_o([F|Fs], X)  -> do_o(Fs, F(X)).
 
+-ifdef(TEST).
 o_test() ->
   foo = (o([]))(foo),
   F   = fun(X) -> X+1 end,
@@ -65,6 +72,7 @@ o_test() ->
   H   = fun(X) -> X-1 end,
   83  = (o(F, G, H))(42),
   83  = (o(F, o(G, H)))(42).
+-endif.
 
 
 -spec reduce(fun(() -> A) | A)   -> A.
@@ -72,7 +80,9 @@ o_test() ->
 reduce(X) when is_function(X, 0) -> reduce(X());
 reduce(X)                        -> X.
 
+-ifdef(TEST).
 reduce_test() -> val = reduce(fun() -> fun() -> val end end).
+-endif.
 
 
 -spec unwind_with(fun((A, fun((B) -> C)) -> C),
@@ -86,6 +96,7 @@ unwind_with([X|Xs], F, G, Ys) ->
 unwind_with([], _F, G, Ys) ->
   G(lists:reverse(Ys)).
 
+-ifdef(TEST).
 unwind_with_test() ->
   F         = fun(X, G) ->
                 Y = X + 1,
@@ -95,6 +106,7 @@ unwind_with_test() ->
               end,
   G         = fun(Ys) -> [Y rem 2 || Y <- Ys] end,
   [0, 1, 0] = unwind_with(F, [1, 2, 3], G).
+-endif.
 
 %%%_* Emacs ============================================================
 %%% Local Variables:

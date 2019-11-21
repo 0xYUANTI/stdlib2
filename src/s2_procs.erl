@@ -15,6 +15,7 @@
         , pid/1
         , recv/1
         , recv/2
+	, recv/3
         , send/2
         , spinlock/1
         , with_monitor/2
@@ -25,7 +26,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 %%%_ * Types -----------------------------------------------------------
@@ -48,6 +51,7 @@ flush(Msg) ->
   after   0   -> ok
   end.
 
+-ifdef(TEST).
 flush_test() ->
   self() ! foo,
   self() ! bar,
@@ -57,6 +61,7 @@ flush_test() ->
   self() ! bar,
   flush(foo),
   bar = receive foo -> foo; bar -> bar after 0 -> baz end.
+-endif.
 
 %%%_ * is_up -----------------------------------------------------------
 -spec is_up(proc()) -> boolean().
@@ -64,12 +69,14 @@ flush_test() ->
 is_up(Proc) ->
   is_process_alive(Proc).
 
+-ifdef(TEST).
 is_up_test() ->
   Pid1  = spawn(?thunk(ok)),
   Pid2  = spawn(?thunk(receive after infinity -> ok end)),
   timer:sleep(1),
   false = is_up(Pid1),
   true  = is_up(Pid2).
+-endif.
 
 %%%_ * kill ------------------------------------------------------------
 -spec kill([proc()]) -> boolean().
@@ -98,6 +105,7 @@ do_kill(Pid, [unlink]) ->
 do_kill(Pid, []) when is_pid(Pid) ->
   erlang:exit(Pid, kill).
 
+-ifdef(TEST).
 kill_test() ->
   process_flag(trap_exit, true),
   F     = ?thunk(receive after infinity -> ok end),
@@ -110,6 +118,7 @@ kill_test() ->
   timer:sleep(100),
   false = is_up(Pid1),
   false = kill(nosuchregname).
+-endif.
 
 %%%_ * pid -------------------------------------------------------------
 -spec pid(proc())            -> pid() | undefined.
@@ -122,6 +131,7 @@ pid({Name, Node})            -> case rpc:call(Node, erlang, whereis, [Name]) of
                                   _                    -> undefined %badrpc
                                 end.
 
+-ifdef(TEST).
 pid_test() ->
   Self      = self(),
   true      = register(pid_test, Self),
@@ -131,6 +141,7 @@ pid_test() ->
   undefined = pid(nosuchregname),
   Self      = pid({pid_test, node()}),
   undefined = pid({pid_test, nosuch@node}).
+-endif.
 
 %%%_ * send/recv -------------------------------------------------------
 -spec send(proc(), _) -> whynot(no_such_process).
@@ -166,6 +177,7 @@ tab(Pid)  when is_pid(Pid)   -> {self(), Pid,           Pid};
 tab(Name) when is_atom(Name) -> {self(), whereis(Name), {Name, node()}};
 tab({Name, Node})            -> {node(), Node,          {Name, Node}}.
 
+-ifdef(TEST).
 send_recv_test() ->
   Self                     = self(),
   Pid                      = spawn(?thunk({ok, foo} = recv(Self), ok = send(Self, bar))),
@@ -188,18 +200,21 @@ send_recv_test() ->
 
 tab_test() ->
   true = {node(), node(), {name, node()}} =:= tab({name, node()}).
+-endif.
 
 %%%_ * spinlock --------------------------------------------------------
 -spec spinlock(fun(() -> boolean())) -> true | no_return().
 %% @doc Spin until F returns true.
 spinlock(F) -> F() orelse spinlock(F).
 
+-ifdef(TEST).
 spinlock_test() ->
   spawn(?thunk(spinlock(
     fun() ->
       lists:member(spinlock_test, registered())
         orelse begin register(spinlock_test, self()), false end
     end))).
+-endif.
 
 %%%_ * with_monitor ----------------------------------------------------
 -spec with_monitor(proc(), fun(({proc(), reference()}) -> A)) -> A.
@@ -211,10 +226,12 @@ with_monitor(Proc, F) ->
   after erlang:demonitor(Monitor, [flush])
   end.
 
+-ifdef(TEST).
 with_monitor_test() ->
   {error, {down, _}} =
     with_monitor(spawn(?thunk(ok)),
                  fun({Proc, Monitor}) -> recv(Proc, Monitor, infinity) end).
+-endif.
 
 %%%_* Emacs ============================================================
 %%% Local Variables:

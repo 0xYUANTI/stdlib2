@@ -41,7 +41,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 -include_lib("kernel/include/file.hrl").
 -include_lib("kernel/include/inet.hrl").
 
@@ -52,20 +54,26 @@ cp(Src, Dest0)           -> Dest    = unix2erl(Src, Dest0),
                             {ok, _} = file:copy(Src, Dest),
                             Dest.
 
+-ifdef(TEST).
 cp_test()                -> rm_rf(s2_fs:with_temp_file(
                               fun(F) -> cp(F, F ++ ".2") end)).
+-endif.
 
 
 -spec ls(file())         -> [file()].
 ls(Dir)                  -> {ok, Files} = file:list_dir(Dir), Files.
 
+-ifdef(TEST).
 ls_test()                -> [_|_] = ls("/tmp").
+-endif.
 
 
 -spec ls_l(file())       -> [file()].
 ls_l(Dir)                -> [filename:join(Dir, File) || File <- ls(Dir)].
 
+-ifdef(TEST).
 ls_l_test()              -> ["/tmp/" ++ _|_] = ls_l("/tmp").
+-endif.
 
 
 -spec mkdir(file())      -> file().
@@ -76,11 +84,13 @@ mkdir_p(Dir)             -> ok = filelib:ensure_dir(Dir),
                             filelib:is_dir(Dir) orelse (ok=file:make_dir(Dir)),
                             Dir.
 
+-ifdef(TEST).
 mkdir_test()             -> rmdir(mkdir(mktemp_u())).
 mkdir_p_test()           -> D1 = mktemp_u(),
                             D2 = mktemp_u(),
                             mkdir_p(D1 ++ D2),
                             rm_rf(D1).
+-endif.
 
 
 -spec mv(file(), file()) -> file().
@@ -88,8 +98,10 @@ mv(Old, New0)            -> New = unix2erl(Old, New0),
                             ok = file:rename(Old, New),
                             New.
 
+-ifdef(TEST).
 mv_test()                -> rm_rf(s2_fs:with_temp_file(
                               fun(F) -> mv(F, F ++ ".2") end)).
+-endif.
 
 
 -spec rm_rf(file())      -> file().
@@ -101,19 +113,24 @@ rm_rf(false, Path)       -> case file:delete(Path) of
                               {error, enoent} -> ok
                             end.
 
+-ifdef(TEST).
 rm_rf_test()             -> rm_rf("nosuchfile").
+-endif.
 
 
 -spec rmdir(file())      -> file().
 rmdir(Dir)               -> ok = file:del_dir(Dir), Dir.
 
+-ifdef(TEST).
 rmdir_test()             -> rmdir(mktemp_d()).
+-endif.
 
 
 -spec touch(file())      -> file().
 touch(File)              -> ok = file:change_time(File, s2_time:datetime()),
                             File.
 
+-ifdef(TEST).
 touch_test() ->
   true = s2_fs:with_temp_file(fun(F) ->
     F = touch(F),
@@ -123,6 +140,7 @@ touch_test() ->
     {ok, #file_info{mtime=Mtime2}} = file:read_file_info(F),
     Mtime1 < Mtime2
   end).
+-endif.
 
 %%
 %% Internal
@@ -154,18 +172,22 @@ mktemp_d(Prefix, Dir0) -> Dir = temp_name(Dir0, Prefix),
                           ok  = file:make_dir(Dir),
                           Dir.
 
+-ifdef(TEST).
 mktemp_test()          -> rm_rf("/tmp/mktemp" ++ _ = mktemp()),
                           rm_rf("/tmp/"       ++ _ = mktemp("", "/tmp")).
 mktemp_u_test()        -> "/tmp/mktemp_u" ++ _ = mktemp_u().
 mktemp_d_test()        -> rmdir(mktemp_d()).
+-endif.
 
 
 temp_name(Dir, "")     -> temp_name(Dir ++ "/");
 temp_name(Dir, Prefix) -> temp_name(filename:join(Dir, Prefix)).
 temp_name(Stem)        -> Stem ++ ?i2l(rand:uniform(1 bsl 127) - 1).
 
+-ifdef(TEST).
 temp_name_test()       -> "/tmp/prefix" ++ N = temp_name("/tmp", "prefix"),
                           ?l2i(N).
+-endif.
 
 %%%_ * Misc ------------------------------------------------------------
 eval(Fmt, Args) ->
@@ -184,9 +206,11 @@ eval(Cmd) ->
     end
   end).
 
+-ifdef(TEST).
 eval_test() ->
   {ok, _}         = eval("ls /tmp"),
   {error, {_, _}} = eval("ls nosuchfile").
+-endif.
 
 
 -spec host(string() | inet:ip_address()) -> inet:ip_address() | string().
@@ -195,9 +219,11 @@ host(Host) when ?is_string(Host) ->
 host(IP) when is_tuple(IP) ->
   s2_lists:to_list((?unlift(inet:gethostbyaddr(IP)))#hostent.h_name).
 
+-ifdef(TEST).
 host_test() ->
   {127, 0, 0, 1} = host("localhost"),
   "localhost"    = host({127, 0, 0, 1}).
+-endif.
 
 %%%_* Emacs ============================================================
 %%% Local Variables:

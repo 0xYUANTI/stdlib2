@@ -35,7 +35,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 %%%_ * read/write ------------------------------------------------------
@@ -49,12 +51,14 @@ read(File)             -> case file:read_file(File) of
 write(File, Term)      -> ok = file:write_file(File, ?t2b(Term)),
                           Term.
 
+-ifdef(TEST).
 read_write_test() ->
   with_temp_file(fun(F) ->
     foo = write(F, foo),
     foo = read(F)
   end),
   undefined = read("nosuchfile").
+-endif.
 
 %%%_ * with_fd ---------------------------------------------------------
 -spec with_fd(file(), fun((fd()) -> A)) -> A.
@@ -71,6 +75,7 @@ with_fd(File, F) ->
 with_fds(Files, F) -> s2_funs:unwind_with(fun with_fd/2, Files, F).
 
 
+-ifdef(TEST).
 with_fds_ok_test() ->
   with_temp_files(2, fun([F1, F2]) ->
     ok =
@@ -91,6 +96,7 @@ with_fds_error_test() ->
     ok          = file:change_mode(F2, 8#00000),
     {'EXIT', _} = (catch with_fds([F1, F2], fun(_) -> ok end))
   end).
+-endif.
 
 %%%_ * with_temp_fd ----------------------------------------------------
 -spec with_temp_fd(fun(({file(), fd()}) -> A)) -> A.
@@ -104,10 +110,12 @@ with_temp_fd(Prefix, F) ->
   after file:close(FD), file:delete(File)
   end.
 
+-ifdef(TEST).
 with_temp_fd_test() ->
   ok = with_temp_fd(fun({_, FD}) ->
     file:write(FD, "foo")
   end).
+-endif.
 
 
 -spec with_temp_fds(pos_integer() | [file()],
@@ -119,6 +127,7 @@ with_temp_fds(Prefixes, F) when is_list(Prefixes) ->
   s2_funs:unwind_with(fun with_temp_fd/2, Prefixes, F).
 
 
+-ifdef(TEST).
 with_temp_fds_ok_test() ->
   with_temp_fds(2, fun([{_, FD1}, {_, FD2}]) ->
     ok = file:write(FD1, "foo"),
@@ -132,6 +141,7 @@ with_temp_fds_error_test() ->
            end)),
   false = filelib:is_file(F1),
   false = filelib:is_file(F2).
+-endif.
 
 %%%_ * with_temp_file --------------------------------------------------
 -spec with_temp_file(fun((file()) -> A)) -> A.
@@ -153,6 +163,7 @@ with_temp_files(Prefixes, F) when is_list(Prefixes) ->
   s2_funs:unwind_with(fun with_temp_file/2, Prefixes, F).
 
 
+-ifdef(TEST).
 with_temp_files_ok_test() ->
   with_temp_files(2, fun([F1, F2]) ->
     {ok, _} = file:open(F1, [read]),
@@ -164,6 +175,7 @@ with_temp_files_error_test() ->
     (catch with_temp_files(2, fun([F1, F2]) -> throw({F1, F2}) end)),
   false = filelib:is_file(F1),
   false = filelib:is_file(F2).
+-endif.
 
 %%%_ * with_temp_dir ---------------------------------------------------
 -spec with_temp_dir(fun((file()) -> A)) -> A.
@@ -184,6 +196,7 @@ with_temp_dirs(Prefixes, F) when is_list(Prefixes) ->
   s2_funs:unwind_with(fun with_temp_dir/2, Prefixes, F).
 
 
+-ifdef(TEST).
 with_temp_dirs_ok_test() ->
   with_temp_dirs(2, fun([F1, F2]) ->
     true = filelib:is_dir(F1),
@@ -195,6 +208,7 @@ with_temp_dirs_error_test() ->
     (catch with_temp_dirs(2, fun([F1, F2]) -> throw({F1, F2}) end)),
   false = filelib:is_dir(F1),
   false = filelib:is_dir(F2).
+-endif.
 
 %%%_ * sha1 -------------------------------------------------------------
 -define(sha1_blocksize, 32768).

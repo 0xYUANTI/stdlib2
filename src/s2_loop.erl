@@ -31,7 +31,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 -spec for(non_neg_integer(),
@@ -47,9 +49,11 @@ for(I, N, F) ->
   end,
   for(I + 1, N, F).
 
+-ifdef(TEST).
 for_test() ->
   for(3, fun()  -> io:format(user, "foo~n",   [])  end),
   for(3, fun(I) -> io:format(user, "foo~p~n", [I]) end).
+-endif.
 
 
 -spec retry(fun()) -> maybe(_, _).
@@ -74,6 +78,7 @@ retry({error, _}, F, T, N) when N > 0 ->
 dec(infinity) -> infinity;
 dec(N)        -> N-1.
 
+-ifdef(TEST).
 retry_test() ->
   F = ?thunk(receive foo -> self() ! bar
              after   0   -> self() ! foo, {error, foo}
@@ -85,6 +90,7 @@ retry_test() ->
   G(),
   {error, foo} = retry(F, 1, 0),
   exn = (catch G()).
+-endif.
 
 %%%_* Emacs ============================================================
 %%% Local Variables:

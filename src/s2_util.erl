@@ -28,7 +28,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 -spec consult_string(string()) -> maybe(term(), _).
@@ -39,10 +41,12 @@ consult_string(String) ->
     {error, Info, Loc} -> {error, {Info, Loc}}
   end.
 
+-ifdef(TEST).
 consult_string_test() ->
   {ok, 42}   = consult_string("42"),
   {error, _} = consult_string("{42"),
   {error, _} = consult_string([12345]).
+-endif.
 
 
 init_folsom(Metrics) ->

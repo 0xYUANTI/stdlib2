@@ -14,7 +14,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 -spec catenate([atom() | integer() | float() | string()]) -> atom().
@@ -23,8 +25,10 @@ catenate(Args) ->
   ?l2a(lists:concat(lists:foldr(fun(X, Acc) ->
                                   [s2_lists:to_list(X) | Acc] end, [], Args))).
 
+-ifdef(TEST).
 catenate_test() ->
   'foo426.66000000000000000000e+02bar' = catenate([foo, 42, 666.0, "bar"]).
+-endif.
 
 
 -spec gensym() -> atom().
@@ -40,8 +44,10 @@ gensym(Prefix0) ->
   {'EXIT', {badarg, _}} = (catch list_to_existing_atom(Sym)), %assert unique
   ?l2a(Sym).
 
+-ifdef(TEST).
 gensym0_test() -> ?assert(gensym()    =/= gensym()).
 gensym1_test() -> ?assert(gensym(foo) =/= gensym(foo)).
+-endif.
 
 %%%_* Emacs ============================================================
 %%% Local Variables:
