@@ -206,12 +206,14 @@ tab_test() ->
 %% @doc Spin until F returns true.
 spinlock(F) -> F() orelse spinlock(F).
 
+-ifdef(TEST).
 spinlock_test() ->
   spawn(?thunk(spinlock(
     fun() ->
       lists:member(spinlock_test, registered())
         orelse begin register(spinlock_test, self()), false end
     end))).
+-endif.
 
 %%%_ * with_monitor ----------------------------------------------------
 -spec with_monitor(proc(), fun(({proc(), reference()}) -> A)) -> A.
