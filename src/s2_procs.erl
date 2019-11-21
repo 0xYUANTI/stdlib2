@@ -15,6 +15,7 @@
         , pid/1
         , recv/1
         , recv/2
+	, recv/3
         , send/2
         , spinlock/1
         , with_monitor/2
