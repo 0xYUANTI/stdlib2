@@ -11,7 +11,9 @@
         ]).
 
 %%%_* Includes =========================================================
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 -include_lib("stdlib2/include/prelude.hrl").
 
 %%%_* Tests ============================================================
