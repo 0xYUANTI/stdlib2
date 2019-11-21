@@ -15,7 +15,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 %%%_ * ensure_started --------------------------------------------------
@@ -58,12 +60,14 @@ get_arg(Args, App, Param, Def) ->
       end
   end.
 
+-ifdef(TEST).
 get_arg_test() ->
   application:set_env(myapp, myparam, 43),
   42 = get_arg([{myparam, 42}], myapp, myparam, 44),
   43 = get_arg([],              myapp, myparam, 44),
   application:unset_env(myapp, myparam),
   44 = get_arg([],              myapp, myparam, 44).
+-endif.
 
 %%%_ * with_sys --------------------------------------------------------
 -type sys() :: [{App::atom(), Param::atom(), Val::_}].

@@ -36,7 +36,9 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 -type s2map() :: dict:dict().

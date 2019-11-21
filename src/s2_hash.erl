@@ -30,7 +30,9 @@
         ]).
 
 %%%_* Includes =========================================================
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 -spec luhn(string()) -> integer().

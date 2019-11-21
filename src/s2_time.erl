@@ -15,14 +15,18 @@
 
 %%%_* Includes =========================================================
 -include("prelude.hrl").
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %%%_* Code =============================================================
 -spec datetime() -> tuple().
 %% @doc datetime() is the current date and time..
 datetime()       -> calendar:now_to_datetime(os:timestamp()).
 
+-ifdef(TEST).
 datetime_test()  -> {{_Ye, _Mo, _Da}, {_Ho, _Mi, _Se}} = datetime().
+-endif.
 
 
 -spec stamp() -> non_neg_integer().
@@ -31,8 +35,10 @@ stamp()       -> stamp(os).
 stamp(now)    -> stamp(os);
 stamp(os)     -> now_to_microsecs(os:timestamp()).
 
+-ifdef(TEST).
 stamp_test()  -> ?assert(stamp()   < stamp()),
                  ?assert(stamp(os) < stamp(os)).
+-endif.
 
 unix_epoch() ->
   {MegaSecs, Secs, _} = os:timestamp(),
