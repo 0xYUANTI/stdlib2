@@ -268,6 +268,8 @@
         (kivra_metrics:time_mfa([?APP | __Name], ?thunk(__Expr)))).
 -define(do_time_diff(__Name, __Time),
         (kivra_metrics:time_diff([?APP | __Name], __Time))).
+-define(do_histogram(__Name, __Value),
+        (kivra_metrics:histogram([?APP | __Name], __Value))).
 
 -else.
 
@@ -418,6 +420,7 @@
 -define(increment(Fun, Ret),   ?do_increment(Fun, Ret)).
 -define(time(Name, Expr),      ?do_time(Name, Expr)).
 -define(time_diff(Name, Time), ?do_time_diff(Name, Time)).
+-define(histogram(Name, Value), ?do_histogram(Name, Value)).
 
 %%%_* Misc =============================================================
 -define(FUNCTION,

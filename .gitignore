@@ -4,3 +4,4 @@ deps/
 .eunit/
 *.plt
 _build
+/test_db*/

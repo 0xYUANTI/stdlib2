@@ -31,13 +31,15 @@ datetime_test()  -> {{_Ye, _Mo, _Da}, {_Ho, _Mi, _Se}} = datetime().
 
 -spec stamp() -> non_neg_integer().
 %% @doc stamp() is the number of microseconds since the Unix epoch.
+%% TODO: the value is NOT strictly monotonically increasing
 stamp()       -> stamp(os).
 stamp(now)    -> stamp(os);
 stamp(os)     -> now_to_microsecs(os:timestamp()).
 
 -ifdef(TEST).
-stamp_test()  -> ?assert(stamp()   < stamp()),
-                 ?assert(stamp(os) < stamp(os)).
+%% TODO: changed < to =< in test as stamp is not strictly monotonic
+stamp_test()  -> ?assert(stamp()   =< stamp()),
+                 ?assert(stamp(os) =< stamp(os)).
 -endif.
 
 unix_epoch() ->
