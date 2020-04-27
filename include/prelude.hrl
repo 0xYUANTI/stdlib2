@@ -8,6 +8,7 @@
 -define(__PRELUDE_HRL, true).
 
 -include_lib("stdlib/include/assert.hrl").
+-include_lib("kernel/include/logger.hrl").
 
 %%%_* Assertions =======================================================
 -define(hence(A), ?assert(A)).
