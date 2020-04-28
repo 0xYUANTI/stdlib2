@@ -124,9 +124,6 @@
 %%%_* Logging ==========================================================
 -ifdef(S2_USE_OTP_LOGGER).
 
-%% If this compile flag is not specfied, xref will return errors
--compile([{parse_transform, lager_transform}]).
-
 -define(debug(StringOrReport),             ?LOG_DEBUG(StringOrReport)).
 -define(debug(StringOrReport, ArgsOrMeta), ?LOG_DEBUG(StringOrReport, ArgsOrMeta)).
 -define(debug(FunOrFormat, Args, Meta),    ?LOG_DEBUG(FunOrFormat, Args, Meta)).
